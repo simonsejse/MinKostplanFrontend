@@ -151,7 +151,7 @@ const CreateDietPlan = () => {
                 vedligeholdelse samt muskelopbygning.
               </p>
               <div className='pt-6 mb-4'>
-                <table className='w-full table-fixed transform duration-150 text-xs lg:text-[16px] text-center text-white divide-x-2 divide-y-2 divide-gray-600'>
+                <table className='w-full table-fixed transform duration-150 text-xs lg:text-[16px] text-center text-black divide-x-2 divide-y-2 divide-gray-600'>
                   <thead>
                     <tr>
                       <th className='break-all'>Vægttab</th>
@@ -184,7 +184,7 @@ const CreateDietPlan = () => {
                               },
                             })
                           }
-                          className='px-5 py-2 text-white rounded-full bg-cyan-500 hover:bg-cyan-700 hover:shadow-xl shadow-lg shadow-cyan-500/60 mt-2 transform duration-300 hover:tracking-widest hover:cursor-pointer font-bold '
+                          className='px-5 py-2 text-black rounded-full bg-cyan-500 hover:bg-cyan-700 hover:shadow-xl shadow-lg shadow-cyan-500/60 mt-2 transform duration-300 hover:tracking-widest hover:cursor-pointer font-bold '
                         >
                           Vælg
                         </button>
@@ -202,7 +202,7 @@ const CreateDietPlan = () => {
                               },
                             })
                           }
-                          className='px-5 py-2 text-white rounded-full bg-cyan-500 hover:bg-cyan-700 hover:shadow-xl shadow-lg shadow-cyan-500/60 mt-2 transform duration-300 hover:tracking-widest hover:cursor-pointer font-bold '
+                          className='px-5 py-2 text-black rounded-full bg-cyan-500 hover:bg-cyan-700 hover:shadow-xl shadow-lg shadow-cyan-500/60 mt-2 transform duration-300 hover:tracking-widest hover:cursor-pointer font-bold '
                         >
                           Vælg
                         </button>
@@ -221,7 +221,7 @@ const CreateDietPlan = () => {
                               },
                             })
                           }
-                          className='px-5 py-2 text-white rounded-full bg-cyan-500 hover:bg-cyan-700 hover:shadow-xl shadow-lg shadow-cyan-500/60 mt-2 transform duration-300 hover:tracking-widest hover:cursor-pointer font-bold '
+                          className='px-5 py-2 text-black rounded-full bg-cyan-500 hover:bg-cyan-700 hover:shadow-xl shadow-lg shadow-cyan-500/60 mt-2 transform duration-300 hover:tracking-widest hover:cursor-pointer font-bold '
                         >
                           Vælg
                         </button>
@@ -299,7 +299,7 @@ const CreateDietPlan = () => {
               <div className='md:w-2/5 m-4 md:m-0'>
                 <label
                   htmlFor='mealCount'
-                  className='text-center ml-3 md:pl-4 text-white'
+                  className='text-center ml-3 md:pl-4 text-black'
                 >
                   Antal måltider
                 </label>
@@ -315,7 +315,7 @@ const CreateDietPlan = () => {
                     step='1'
                     id='mealCount'
                   />
-                  <output className='ml-3 text-white text-2xl font-bold'>
+                  <output className='ml-3 text-black text-2xl font-bold'>
                     {state.form.mealCount}
                   </output>
                 </div>
@@ -382,7 +382,7 @@ const CreateDietPlan = () => {
                 <span class='animate-ping absolute inline-flex h-3 w-3 rounded-full bg-indigo-400 opacity-75'></span>
                 <span class='relative flex rounded-full h-3 w-3 bg-indigo-600'></span>
               </span>
-              <button class='bg-indigo-500 shadow-lg shadow-indigo-500/50 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-indigo-700 hover:border-blue-500 rounded w-60'>
+              <button class='bg-indigo-500 shadow-lg shadow-indigo-500/50 hover:bg-blue-400 text-black font-bold py-2 px-4 border-b-4 border-indigo-700 hover:border-blue-500 rounded w-60'>
                 Opret kostplan
               </button>
             </div>

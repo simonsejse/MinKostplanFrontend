@@ -48,7 +48,7 @@ const Sidebar = () => {
       {/* Mobile Menu Toggle*/}
       <button
         onClick={() => dispatch({ type: actions.TOGGLE_NAV_MOBILE })}
-        className='sm:hidden absolute top-5 right-5 focus:outline-none z-50 text-black'
+        className='sm:hidden absolute top-5 right-5 focus:outline-none z-50 text-white'
       >
         {/* Menu Icons */}
         <svg
@@ -89,12 +89,12 @@ const Sidebar = () => {
         } ${navState.navOpen ? 'top-0 left-0' : 'top-0 -left-full sm:left-0'}`}
       >
         {navState.full ? (
-          <h1 className='text-black font-black py-7 text-2xl px-4'>
+          <h1 className='text-white font-black py-7 text-2xl px-4'>
             MinKostplan
             <hr className='border-gray-700' />
           </h1>
         ) : (
-          <GiFat className='text-black text-4xl my-7 mx-auto' />
+          <GiFat className='text-white text-4xl my-7 mx-auto' />
         )}
         <div className='px-4 space-y-2'>
           {/* Sidebar toggle */}
@@ -105,7 +105,7 @@ const Sidebar = () => {
             className='hidden sm:block focus:outline-none absolute p-1 -right-3 top-10 bg-gray-900 rounded-full shadow-md'
           >
             <BsChevronDown
-              className={`fill-red-700 h4 w-4 transition-all text-black duration-300 transform ${
+              className={`fill-red-700 h4 w-4 transition-all text-white duration-300 transform ${
                 navState.full ? 'rotate-90' : '-rotate-90'
               }`}
             />
@@ -117,7 +117,7 @@ const Sidebar = () => {
               dispatch({ type: actions.SWITCH_TAB, payload: 'home' });
               navigate('/home');
             }}
-            className={`relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer text-black ${
+            className={`relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer text-white ${
               navState.full ? 'justify-start' : 'sm:justify-center'
             } ${navState.active === 'home' && 'bg-accent'}`}
           >
@@ -139,16 +139,16 @@ const Sidebar = () => {
                 navState.full ? 'justify-start' : 'sm:justify-center'
               }`}
             >
-              <div className='relative flex space-x-2 items-center'>
-                <BiFoodMenu className='h-6 w-6 fill-white' />
-                <h1 className={`${!navState.full && 'sm:hidden'} text-black`}>
+              <div className='relative flex space-x-2 items-center text-white'>
+                <BiFoodMenu className='h-6 w-6' />
+                <h1 className={`${!navState.full && 'sm:hidden'} text-white`}>
                   Kostplan
                 </h1>
               </div>
               <BsChevronDown
                 className={`h-3 w-3 ${
                   !navState.full && 'sm:hidden'
-                } transition-all text-black duration-300 transform ${
+                } transition-all text-white duration-300 transform ${
                   navState.dpDropdown.open && 'rotate-180'
                 }`}
               />
@@ -170,7 +170,7 @@ const Sidebar = () => {
                       dispatch({ type: actions.SWITCH_TAB, payload: 'diets' });
                       navigate('/diets');
                     }}
-                    className={`w-full h-full text-black ${
+                    className={`w-full h-full text-white ${
                       navState.full ? 'p-2 rounded-md' : 'p-1 rounded-md'
                     } ${navState.active === 'diets' && 'bg-accent'}`}
                   >
@@ -186,7 +186,7 @@ const Sidebar = () => {
                       });
                       navigate('/create-diet-plan');
                     }}
-                    className={`w-full h-full text-black ${
+                    className={`w-full h-full text-white ${
                       navState.full ? 'p-2 rounded-md' : 'p-3 rounded-md'
                     } ${navState.active === 'create-diet-plan' && 'bg-accent'}`}
                   >
@@ -208,9 +208,9 @@ const Sidebar = () => {
                 });
                 navigate('/create-recipe');
               }}
-              className={`relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer text-black ${
+              className={`relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer text-white ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
-              } ${navState.active === 'create-recipe' && 'bg-accent'}`}
+              } ${navState.active === 'create-recipe' && 'bg-red-600'}`}
             >
               <GiHotMeal className='h-6 w-6' />
               <h1 className={`${!navState.full && 'sm:hidden'}`}>
@@ -225,7 +225,7 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'membership' });
                 navigate('/membership');
               }}
-              className={`relative flex items-center text-black hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`relative flex items-center text-white hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
               } ${navState.active === 'membership' && 'bg-accent'}`}
             >
@@ -242,7 +242,7 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'about' });
                 navigate('/about');
               }}
-              className={`text-black relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
               } ${navState.active === 'about' && 'bg-accent'}`}
             >
@@ -257,7 +257,7 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'support' });
                 navigate('/support');
               }}
-              className={`text-black relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
               } ${navState.active === 'support' && 'bg-accent'}`}
             >
@@ -272,7 +272,7 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'settings' });
                 navigate('/settings');
               }}
-              className={`text-black relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
               } ${navState.active === 'settings' && 'bg-accent'}`}
             >
@@ -298,7 +298,7 @@ const Sidebar = () => {
                       navState.full ? 'justify-start' : 'sm:justify-center'
                     }`}
                   >
-                    <div className='text-black relative flex space-x-2 items-center'>
+                    <div className='text-white relative flex space-x-2 items-center'>
                       <MdAdminPanelSettings className='h-6 w-6' />
                       <h1 className={`${!navState.full && 'sm:hidden'}`}>
                         Admin
@@ -307,7 +307,7 @@ const Sidebar = () => {
                     <BsChevronDown
                       className={`h-3 w-3 ${
                         !navState.full && 'sm:hidden'
-                      } transition-all text-black duration-300 transform ${
+                      } transition-all text-white duration-300 transform ${
                         navState.adminDropdown.open && 'rotate-180'
                       }`}
                     />
@@ -332,7 +332,7 @@ const Sidebar = () => {
                             });
                             navigate('/admin/create-meal');
                           }}
-                          className={`text-black w-full h-full ${
+                          className={`text-white w-full h-full ${
                             navState.full ? 'p-2 rounded-md' : 'p-3 rounded-md'
                           } ${
                             navState.active === 'create-meal' && 'bg-accent'
@@ -358,7 +358,7 @@ const Sidebar = () => {
                     .logOut()
                     .then(() => console.log('Log out babygirl'))
                 }
-                className={`text-black relative flex items-center hover:text-gray-200 hover:bg-gray-800 space-x-2 rounded-md p-2 cursor-pointer ${
+                className={`text-white relative flex items-center hover:text-gray-200 hover:bg-gray-800 space-x-2 rounded-md p-2 cursor-pointer ${
                   navState.full ? 'justify-start' : 'sm:justify-center'
                 }`}
               >
@@ -366,8 +366,6 @@ const Sidebar = () => {
                 <h1 className={`${!navState.full && 'sm:hidden'}`}>Log ud</h1>
               </div>
             )}
-
-            <hr className='border-gray-700' />
           </div>
         </div>
 
@@ -384,7 +382,7 @@ const Sidebar = () => {
           <div className='flex justify-center mt-12'>
             <img
               src='https://i.stack.imgur.com/l60Hf.png'
-              className={`transition-all duration-1000 rounded-full ${
+              className={`transition-all duration-1000 rounded-full object-cover ${
                 navState.full || navState.navOpen ? 'h-20 w-20' : 'h-12 w-12'
               }`}
               alt='profile'

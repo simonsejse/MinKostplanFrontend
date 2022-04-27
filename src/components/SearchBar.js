@@ -27,16 +27,16 @@ export const SearchBar = ({ placeholder, data, handleOnAdd }) => {
   };
 
   return (
-    <div className='search mb-4'>
+    <div className='search mb-4 flex-1'>
       <div className='flex'>
         <input
-          className='rounded-bl-lg rounded-tl-lg bg-gray-200 text-gray-700 bg-white border-0 font-[18px] p-[15px] h-[60px] w-[300px] focus:ring-0 focus:outline-none'
+          className='rounded-bl-lg rounded-tl-lg bg-gray-200 text-gray-700 bg-white border-0 font-[18px] p-[15px] h-[52px] w-full focus:ring-0 focus:outline-none'
           type='text'
           placeholder={placeholder}
           value={searchTerm}
           onChange={(e) => handleFilter(e)}
         />
-        <div className='rounded-br-lg rounded-tr-lg bg-gray-200 h-[60px] w-[50px] bg-white grid place-content-center'>
+        <div className='rounded-br-lg rounded-tr-lg bg-gray-200 h-[52px] w-[50px] bg-white grid place-content-center'>
           {filteredData.length > 0 ? (
             <AiFillCloseCircle
               onClick={() => clearInput()}

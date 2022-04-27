@@ -1,13 +1,11 @@
 import axios from 'axios';
 import { axiosRequestConfig } from '../../config/axios-config';
 
-const API_URL = 'http://localhost:8080/api/foods';
+const BASE_API_URL = 'http://localhost:8080/api/foods';
 
 class FoodService {
-  async getAllFoods() {
-    return axios.get(API_URL, axiosRequestConfig).then((resp) => {
-      return resp.data;
-    });
+  async getAllFoodDTOs() {
+    return axios.get(BASE_API_URL, axiosRequestConfig);
   }
 }
 

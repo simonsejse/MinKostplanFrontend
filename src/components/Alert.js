@@ -1,4 +1,11 @@
-const Alert = ({ show, isError, title, message, handleClose, isCloseable }) => {
+const Alert = ({
+  show,
+  isError,
+  title,
+  message,
+  handleOnClose,
+  isCloseable,
+}) => {
   const color = isError ? 'red' : 'green';
   return (
     <div
@@ -41,7 +48,7 @@ const Alert = ({ show, isError, title, message, handleClose, isCloseable }) => {
               } bg-transparent border border-${color}-700 hover:bg-${color}-800 text-${color}-800 hover:text-white focus:ring-4 focus:outline-none focus:ring-${color}-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center`}
               data-dismiss-target='#alert-additional-content-2'
               onClick={() => {
-                handleClose();
+                handleOnClose();
               }}
               aria-label='Close'
               disabled={isCloseable === false}

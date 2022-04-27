@@ -6,7 +6,6 @@ import React, { useReducer, useState, useEffect, useContext } from 'react';
  * Contexts
  */
 import { useAuth } from '../../contexts/auth.context';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 /**
  * Components
@@ -14,16 +13,14 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Alert from '../Alert';
 import DropDownSelect from '../DropDownSelect';
 import SearchBar from '../SearchBar';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 /**
  * Services
  */
 import recipeService from '../../services/recipe/recipe.service';
+import foodService from '../../services/food/food.service';
 
-/**
- * Css
- */
-//import '../css/CreateRecipe.css';
 /* Reducers */
 import {
   reducer,
@@ -95,6 +92,26 @@ const CreateRecipe = () => {
           },
         });
       });
+    foodService
+      .getAllFoodDTOs()
+      .then((res) => {
+        console.log('Successfully loaded all food items');
+        dispatch({ type: actions.UPDATE_FOOD, payload: res.data });
+      })
+      .catch((err) => {
+        console.log("Couldn't load ingredients!");
+        dispatch({
+          type: actions.CHANGE_ALERT_STATE,
+          payload: {
+            show: true,
+            isError: true,
+            isCloseable: false,
+            title: 'Kunne ikke loade mad-ingredienser!',
+            message:
+              'Kunne ikke loade mad ingredienserne! Reload siden og sørg for at du er logget ind!',
+          },
+        });
+      });
   }, []);
   /**
    * Lav et API request til RecipeType og så kan jeg tilføje til et "options" og vise til brugeren
@@ -114,12 +131,20 @@ const CreateRecipe = () => {
     });
   };
 
-  const show = true;
-
   return (
     <>
       <div className='flex-1 bg-primary'>
-        {show && <InstructionModal />}
+        <div className='relative'>
+          <Alert
+            show={state.alert.show}
+            isError={state.alert.isError}
+            title={state.alert.title}
+            message={state.alert.message}
+            isCloseable={state.alert.isCloseable}
+            handleOnClose={hideAlert}
+          />
+        </div>
+        <InstructionModal />
         <div className='h-full flex items-center'>
           <div className='bg-secondary rounded-md min-h-[72%] flex flex-col items-center ml-5 mr-5 flex-1 shadow-form'>
             <h1 className='font-title text-lg uppercase text-gray-900 text-center p-5'>
@@ -153,9 +178,9 @@ const CreateRecipe = () => {
                   id='recipeType'
                   name='type'
                 >
-                  <option>Morgenmad</option>
-                  <option>FROKOST</option>
-                  <option>AFTENSMAD</option>
+                  {state.categories.map((category, index) => {
+                    return <option key={index}>{category}</option>;
+                  })}
                 </select>
               </div>
               <div className='flex text-start ml-12 items-center mr-5'>
@@ -199,42 +224,79 @@ const CreateRecipe = () => {
               </div>
               <div className='flex text-start ml-12 items-center mr-5'>
                 <label
-                  htmlFor='recipeReadyInMinutes'
+                  htmlFor='newIngredient'
+                  className='uppercase w-1/4 font-title text-sm self-start'
+                >
+                  Ny ingrediens
+                </label>
+                <SearchBar
+                  placeholder={'Søg efter en ingrediens...'}
+                  data={state.foods}
+                  handleOnAdd={() => console.log('hi')}
+                />
+                <button
+                  onClick={() => dispatch({ type: actions.NEW_INSTRUCTION })}
+                  className='ml-4 bg-button text-sm font-title uppercase text-white self-start p-2 rounded w-[80px]'
+                >
+                  Tilføj
+                </button>
+                <button
+                  onClick={() =>
+                    dispatch({
+                      type: actions.SHOW_INSTRUCTION_MODAL,
+                      payload: true,
+                    })
+                  }
+                  className='ml-4 bg-green-300 text-sm font-title uppercase text-black self-start p-2 rounded w-[50px]'
+                >
+                  VIS
+                </button>
+              </div>
+              <div className='flex text-start ml-12 items-center mr-5'>
+                <label
+                  htmlFor='newInstruction'
                   className='uppercase w-1/4 font-title text-sm self-start'
                 >
                   Ny instruktion
                 </label>
                 <textarea
                   className='flex-1 text-sm font-text appearance-none min-h-[52px] h-[52px] block bg-gray-100 text-black border border-gray-200 rounded py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
-                  id='recipeReadyInMinutes'
-                  name='readyInMinutes'
-                  type='number'
+                  id='newInstruction'
+                  name='newInstruction'
+                  value={state.form.newInstruction}
+                  onChange={(e) =>
+                    dispatch({
+                      type: actions.CHANGE_FORM_DATA,
+                      payload: {
+                        dataToBeChanged: e.target.name,
+                        value: e.target.value,
+                      },
+                    })
+                  }
                   placeholder='Angiv en instruks til hvordan skal opskriften følges! Rækkefølge kan ændres i "Vis"!'
                 />
-                <button className='ml-4 bg-button text-sm font-title uppercase text-white self-start p-2 rounded w-[80px]'>
-                  Tilføj
-                </button>
-                <button className='ml-4 bg-green-300 text-sm font-title uppercase text-black self-start p-2 rounded w-[50px]'>
-                  VIS
-                </button>
-              </div>
-              <div className='flex text-start ml-12 items-center mr-5'>
-                <label
-                  htmlFor='recipeReadyInMinutes'
-                  className='uppercase w-1/4 font-title text-sm'
+                <button
+                  onClick={() => dispatch({ type: actions.NEW_INSTRUCTION })}
+                  className='ml-4 bg-button text-sm font-title uppercase text-white self-start p-2 rounded w-[80px]'
                 >
-                  Ny ingrediens
-                </label>
-                <button className='bg-button text-sm font-title uppercase text-white self-start p-2 rounded flex-1'>
                   Tilføj
                 </button>
-                <button className='ml-4 bg-green-300 text-sm font-title uppercase text-black self-start p-2 rounded flex-1'>
+                <button
+                  onClick={() =>
+                    dispatch({
+                      type: actions.SHOW_INSTRUCTION_MODAL,
+                      payload: true,
+                    })
+                  }
+                  className='ml-4 bg-green-300 text-sm font-title uppercase text-black self-start p-2 rounded w-[50px]'
+                >
                   VIS
                 </button>
               </div>
+
               <div className='flex text-start ml-12 items-center mr-5'>
                 <div className='w-1/4'></div>
-                <button className='flex-1 bg-red-300 text-sm font-title font-bold uppercase text-black self-start p-2 rounded'>
+                <button className='flex-1 mb-5 bg-red-300 text-sm font-title font-bold uppercase text-black self-start p-2 rounded'>
                   Upload opskrift
                 </button>
               </div>
@@ -261,32 +323,129 @@ const CreateRecipe = () => {
     </>
   );
 };
+const grid = 8;
+const getItemStyle = (isDragging, draggableStyle) => ({
+  // some basic styles to make the items look a bit nicer
+  userSelect: 'none',
+  padding: grid * 2,
+  margin: `0 0 ${grid}px 0`,
+  borderRadius: 7,
+  // change background colour if dragging
+  color: isDragging ? 'black' : 'white',
+  background: isDragging ? 'lightgreen' : 'rgb(31 41 55)',
+  boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.43) 0px 3px 6px',
+
+  // styles we need to apply on draggables
+  ...draggableStyle,
+});
+const getListStyle = (isDraggingOver) => ({
+  background: isDraggingOver ? '#ffffff' : '#ffffff',
+  borderRadius: 7,
+  boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.53) 0px 3px 6px',
+  padding: grid * 4,
+});
 
 const InstructionModal = () => {
+  const { state, dispatch } = useRecipeReducer();
+
+  function handleOnDragEnd(result) {
+    if (!result.destination) return;
+
+    const items = Array.from(state.form.instructions);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    dispatch({ type: actions.UPDATE_INSTRUCTIONS, payload: items });
+  }
+
   return (
     <>
-      <div className='absolute w-full sm:w-[calc(100%-5rem)] right-0 bg-primary h-full'>
+      <div
+        className={`fixed w-[calc(100%-5rem)] h-full duration-[450ms] overflow-y-auto ${
+          !state.showInstructionModal && 'transform scale-0 opacity-0'
+        } bg-primary`}
+      >
         <header className='flex flex-col'>
           <div className='m-2 flex justify-between'>
-            <h1 className='font-title uppercase text-2xl'>Instruktioner</h1>
+            <h1 className='font-title font-bold ml-6 tracking-widest uppercase text-2xl'>
+              Instruktioner
+            </h1>
             <BsX
               size={30}
-              className='hover:animate-spin cursor-pointer fill-red-600 hover:fill-red-800'
+              onClick={() =>
+                dispatch({
+                  type: actions.SHOW_INSTRUCTION_MODAL,
+                  payload: false,
+                })
+              }
+              className='hover:animate-spin cursor-pointer fill-red-700 hover:fill-red-900'
             />
           </div>
-          <hr className='border border-red-400' />
-          <div className='flex justify-center m-4'>
-            <div className='grid grid-flow-row grid-cols-3'>
-              <div className='w-[250px] h-[200px] bg-primary shadow-instructionShadow rounded'>
-                <div className='relative m-4'>
-                  <h1>1.</h1>
-                  <p className='font-title text-sm'>
-                    Du skal spise hest og sætte den i en ovn!
-                  </p>
-                  <AiTwotoneDelete className='absolute top-0 right-0 hover:fill-red-500 cursor-pointer hover:scale-105' />
-                </div>
-              </div>
-            </div>
+          <hr className='border-red-700' />
+          <div className='flex justify-center m-6 text-white'>
+            <DragDropContext onDragEnd={handleOnDragEnd}>
+              <Droppable
+                key='new-recipe-instructions'
+                droppableId='new-recipe-instructions'
+              >
+                {(provided, snapshot) => (
+                  <div
+                    className='w-full'
+                    ref={provided.innerRef}
+                    style={getListStyle(snapshot.isDraggingOver)}
+                    {...provided.droppableProps}
+                  >
+                    {state.form.instructions.length > 0 ? (
+                      state.form.instructions.map((instruction, index) => (
+                        <Draggable
+                          key={instruction.id}
+                          draggableId={instruction.id}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getItemStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style
+                              )}
+                            >
+                              <div className='relative'>
+                                <h1 className='font-title text-md font-bold'>
+                                  {index + 1}.
+                                </h1>
+                                <p className='font-title text-sm'>
+                                  {instruction.instruction}
+                                </p>
+                                <AiTwotoneDelete
+                                  onClick={() => {
+                                    dispatch({
+                                      type: actions.DELETE_INSTRUCTION_BY_INSTRUCTION,
+                                      payload: instruction.instruction,
+                                    });
+                                  }}
+                                  className='absolute top-2 right-2 hover:fill-red-500 cursor-pointer hover:scale-105'
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))
+                    ) : (
+                      <div>
+                        <h1 className='text-black font-title text-red-800'>
+                          Der er ingen instruktioner på hvordan retten skal
+                          laves!
+                        </h1>
+                      </div>
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         </header>
       </div>

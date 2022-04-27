@@ -15,6 +15,7 @@ import Error from './Error404';
 import About from './pages/About';
 import CreateRecipe from './pages/CreateRecipe';
 import Support from './pages/Support';
+import { DragDropContext } from 'react-beautiful-dnd';
 /**
  * Custom React Providers
  */

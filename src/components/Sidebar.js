@@ -84,7 +84,7 @@ const Sidebar = () => {
       </button>
 
       <div
-        className={`h-screen bg-accent transition-all duration-300 space-y-2 fixed ${
+        className={`h-screen bg-accent transition-all duration-300 fixed ${
           navState.full ? 'w-64' : 'w-full sm:w-20'
         } ${navState.navOpen ? 'top-0 left-0' : 'top-0 -left-full sm:left-0'}`}
       >
@@ -281,7 +281,6 @@ const Sidebar = () => {
                 Indstillinger
               </h1>
             </div>
-            <hr className='border-gray-700' />
 
             {user.roles.includes('ROLE_ADMIN') && (
               <>
@@ -349,45 +348,11 @@ const Sidebar = () => {
                 </div>
               </>
             )}
-
-            {/* Log out */}
-            {user && (
-              <div
-                onClick={() =>
-                  authService
-                    .logOut()
-                    .then(() => console.log('Log out babygirl'))
-                }
-                className={`text-white relative flex items-center hover:text-gray-200 hover:bg-gray-800 space-x-2 rounded-md p-2 cursor-pointer ${
-                  navState.full ? 'justify-start' : 'sm:justify-center'
-                }`}
-              >
-                <FiLogOut className='h-6 w-6' />
-                <h1 className={`${!navState.full && 'sm:hidden'}`}>Log ud</h1>
-              </div>
-            )}
           </div>
         </div>
 
-        <div className='w-full absolute bottom-10 flex flex-col p-4'>
-          <div
-            className={`text-gray-400 ${
-              !navState.full && !navState.navOpen && 'hidden'
-            }`}
-          >
-            <h1 className='text-4xl'>Hej,</h1>
-            <h2 className='text-gray-600 text-2xl'>{user?.username}!</h2>
-          </div>
-          <hr className='border-gray-700' />
-          <div className='flex justify-center mt-12'>
-            <img
-              src='https://i.stack.imgur.com/l60Hf.png'
-              className={`transition-all duration-1000 rounded-full object-cover ${
-                navState.full || navState.navOpen ? 'h-20 w-20' : 'h-12 w-12'
-              }`}
-              alt='profile'
-            />
-          </div>
+        <div className='h-full grid place-items-end p-0 m-0'>
+          <h1 className='text-xl text-black'>Hi</h1>
         </div>
       </div>
     </div>

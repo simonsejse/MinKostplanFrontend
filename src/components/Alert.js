@@ -6,7 +6,6 @@ const Alert = ({
   handleOnClose,
   isCloseable,
 }) => {
-  const color = isError ? 'red' : 'green';
   return (
     <div
       className={`z-10 fixed w-full h-full transition duration-300 ease-out ${
@@ -16,12 +15,18 @@ const Alert = ({
       <div className='h-full flex justify-center items-center'>
         <div
           id='alert-additional-content-2'
-          className={`transform duration-300 w-full ml-2 mr-2 md:ml-0 md:mr-0 md:w-3/5 lg:w-2/5 xl:w-2/6 p-4 mb-4 rounded-lg bg-${color}-200`}
+          className={`transform duration-300 w-full ml-2 mr-2 md:ml-0 md:mr-0 md:w-3/5 lg:w-2/5 xl:w-2/6 p-4 mb-4 rounded-lg ${
+            isError ? 'bg-red-200' : 'bg-green-200'
+          }`}
           role='alert'
         >
           <div class='flex items-center'>
             <svg
-              className={`animate-pulse mr-2 w-5 h-5 text-${color}-700 dark:text-${color}-800`}
+              className={`animate-pulse mr-2 w-5 h-5 ${
+                isError
+                  ? 'text-red-700 dark:text-red-800'
+                  : 'text-green-700 dark:text-green-800'
+              }`}
               fill='currentColor'
               viewBox='0 0 20 20'
             >
@@ -32,20 +37,32 @@ const Alert = ({
               ></path>
             </svg>
             <h3
-              class={`animate-pulse text-lg font-medium text-${color}-700 dark:text-${color}-800`}
+              class={`animate-pulse text-lg font-medium ${
+                isError
+                  ? 'text-red-700 dark:text-red-800'
+                  : 'text-green-700 dark:text-green-800'
+              }`}
             >
               {title || 'Info'}
             </h3>
           </div>
-          <div class={`mt-2 mb-4 text-sm text-${color}-800`}>
-            {message || 'Der er sket en fejl! Prøv igen!'}
+          <div
+            class={`overflow-auto mt-2 mb-4 text-sm ${
+              isError ? 'text-red-800' : 'text-green-800'
+            }`}
+          >
+            {message || 'Der er sket en ubehagelig ukendt fejl! Prøv igen!'}
           </div>
           <div class='flex'>
             <button
               type='button'
               className={`${
                 !isCloseable && 'opacity-30 cursor-not-allowed'
-              } bg-transparent border border-${color}-700 hover:bg-${color}-800 text-${color}-800 hover:text-white focus:ring-4 focus:outline-none focus:ring-${color}-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center`}
+              } bg-transparent border hover:text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-xs px-3 py-1.5 text-center ${
+                isError
+                  ? 'border-red-700 hover:bg-red-800 text-red-800 focus:ring-red-300'
+                  : 'border-green-700 hover:bg-green-800 text-green-800 focus:ring-green-300'
+              }`}
               data-dismiss-target='#alert-additional-content-2'
               onClick={() => {
                 handleOnClose();

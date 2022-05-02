@@ -8,6 +8,7 @@ module.exports = {
         instructionShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
         light:
           'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+        pink: 'rgba(240, 46, 170, 0.4) -5px 5px, rgba(240, 46, 170, 0.3) -10px 10px, rgba(240, 46, 170, 0.2) -15px 15px, rgba(240, 46, 170, 0.1) -20px 20px, rgba(240, 46, 170, 0.05) -25px 25px',
       },
       height: {
         90: '90%',
@@ -25,6 +26,7 @@ module.exports = {
         secondary: '#ffffff',
         accent: '#ff3f48',
         button: '#444444',
+        card: 'rgb(31 41 55)',
         gray: {
           400: '#969798',
           500: '#666666',

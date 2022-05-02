@@ -20,7 +20,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
  */
 import recipeService from '../../services/recipe/recipe.service';
 import foodService from '../../services/food/food.service';
-
+import measurementService from '../../services/measures/measurement.service';
 /* Reducers */
 import {
   reducer,
@@ -33,9 +33,7 @@ import { HiOutlineDotsVertical } from 'react-icons/hi';
 import { MdCancel } from 'react-icons/md';
 import { BsX } from 'react-icons/bs';
 import { AiTwotoneDelete } from 'react-icons/ai';
-
 import axios from 'axios';
-import { axiosRequestConfig } from '../../config/axios-config';
 
 const ReducerContext = React.createContext();
 
@@ -112,6 +110,24 @@ const CreateRecipe = () => {
           },
         });
       });
+    measurementService
+      .getAvailableMeasurements()
+      .then((res) => {
+        dispatch({ type: actions.SET_MEASUREMENTS, payload: res.data });
+      })
+      .catch((err) => {
+        dispatch({
+          type: actions.CHANGE_ALERT_STATE,
+          payload: {
+            show: true,
+            isError: true,
+            isCloseable: false,
+            title: 'Kunne ikke loade målinger!',
+            message:
+              'Kunne ikke loade mad målinger! Reload siden og sørg for at du er logget ind!',
+          },
+        });
+      });
   }, []);
   /**
    * Lav et API request til RecipeType og så kan jeg tilføje til et "options" og vise til brugeren
@@ -131,6 +147,74 @@ const CreateRecipe = () => {
     });
   };
 
+  const createRecipeDTO = () => {
+    return {
+      name: state.form.name,
+      type: state.form.type,
+      vegetarian: state.form.booleans.isVegetarian,
+      vegan: state.form.booleans.isVegan,
+      glutenFree: state.form.booleans.isGlutenFree,
+      dairyFree: state.form.booleans.isDairyFree,
+      veryHealthy: state.form.booleans.isHealthy,
+      cheap: state.form.booleans.isCheap,
+      veryPopular: state.form.booleans.isPopular,
+      sustainable: state.form.booleans.isSustainable,
+
+      pricePerServing: state.form.pricePerServing,
+      instructions: `<li>
+        ${state.form.instructions.map((instruction) => {
+          return `<ol>${instruction}</ol>`;
+        })}
+      </li>`,
+      image: state.form.image,
+      ingredients: [
+        ...state.form.ingredients.map((ingredient) => {
+          return {
+            foodId: ingredient.ingredientById,
+            amount: ingredient.grams,
+            instruction: ingredient.instruction,
+            measures: {
+              type: ingredient.unit,
+              amountOfType: ingredient.amountOwnUnit,
+              amountInGrams: ingredient.grams,
+            },
+            meta: [],
+          };
+        }),
+      ],
+      analyzedInstructions: [
+        ...state.form.instructions.map((instruction, idx) => {
+          return {
+            number: { idx },
+            step: instruction.instruction,
+          };
+        }),
+      ],
+    };
+  };
+
+  const submitRecipe = () => {
+    const recipe = createRecipeDTO();
+    recipeService.newRecipe(recipe).then(
+      (res) => {
+        console.log('success');
+      },
+      (error) => {
+        console.log(error.response.data);
+        dispatch({
+          type: actions.CHANGE_ALERT_STATE,
+          payload: {
+            show: true,
+            isError: true,
+            isCloseable: true,
+            title: 'Kunne ikke uploade ny opskrift!',
+            message: error.response.data.message,
+          },
+        });
+      }
+    );
+  };
+
   return (
     <>
       <div className='flex-1 bg-primary'>
@@ -144,7 +228,8 @@ const CreateRecipe = () => {
             handleOnClose={hideAlert}
           />
         </div>
-        <InstructionModal />
+        <IngredientInstructionModal />
+        <PickFoodModal />
         <div className='h-full flex items-center'>
           <div className='bg-secondary rounded-md min-h-[72%] flex flex-col items-center ml-5 mr-5 flex-1 shadow-form'>
             <h1 className='font-title text-lg uppercase text-gray-900 text-center p-5'>
@@ -162,6 +247,16 @@ const CreateRecipe = () => {
                   className='flex-1 text-sm font-text appearance-none block bg-gray-100 text-black border border-gray-200 rounded py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
                   id='recipeName'
                   name='name'
+                  value={state.form.name}
+                  onChange={(e) => {
+                    dispatch({
+                      type: actions.CHANGE_FORM_DATA,
+                      payload: {
+                        dataToBeChanged: e.target.name,
+                        value: e.target.value,
+                      },
+                    });
+                  }}
                   type='text'
                   placeholder='Opskrift navn'
                 />
@@ -177,6 +272,16 @@ const CreateRecipe = () => {
                   className='flex-1 text-sm font-text appearance-none block bg-gray-100 text-gray-500 border border-gray-200 rounded py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
                   id='recipeType'
                   name='type'
+                  value={state.form.type}
+                  onChange={(e) => {
+                    dispatch({
+                      type: actions.CHANGE_FORM_DATA,
+                      payload: {
+                        dataToBeChanged: e.target.name,
+                        value: e.target.value,
+                      },
+                    });
+                  }}
                 >
                   {state.categories.map((category, index) => {
                     return <option key={index}>{category}</option>;
@@ -194,6 +299,16 @@ const CreateRecipe = () => {
                   className='flex-1 text-sm font-text appearance-none block bg-gray-100 text-black border border-gray-200 rounded py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
                   id='recipePrice'
                   name='pricePerServing'
+                  value={state.form.pricePerServing}
+                  onChange={(e) => {
+                    dispatch({
+                      type: actions.CHANGE_FORM_DATA,
+                      payload: {
+                        dataToBeChanged: e.target.name,
+                        value: e.target.value,
+                      },
+                    });
+                  }}
                   type='number'
                   placeholder='Gns. pris per servering'
                 />
@@ -209,6 +324,16 @@ const CreateRecipe = () => {
                   className='flex-1 text-sm font-text appearance-none block bg-gray-100 text-black border border-gray-200 rounded py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
                   id='recipeReadyInMinutes'
                   name='readyInMinutes'
+                  value={state.form.readyInMinutes}
+                  onChange={(e) => {
+                    dispatch({
+                      type: actions.CHANGE_FORM_DATA,
+                      payload: {
+                        dataToBeChanged: e.target.name,
+                        value: e.target.value,
+                      },
+                    });
+                  }}
                   type='number'
                   placeholder='Hvor lang tid tager opskriften at lave?'
                 />
@@ -232,25 +357,17 @@ const CreateRecipe = () => {
                 <SearchBar
                   placeholder={'Søg efter en ingrediens...'}
                   data={state.foods}
-                  handleOnAdd={() => console.log('hi')}
-                />
-                <button
-                  onClick={() => dispatch({ type: actions.NEW_INSTRUCTION })}
-                  className='ml-4 bg-button text-sm font-title uppercase text-white self-start p-2 rounded w-[80px]'
-                >
-                  Tilføj
-                </button>
-                <button
-                  onClick={() =>
+                  handleOnAdd={(food) => {
+                    console.log('we call');
                     dispatch({
-                      type: actions.SHOW_INSTRUCTION_MODAL,
-                      payload: true,
-                    })
-                  }
-                  className='ml-4 bg-green-300 text-sm font-title uppercase text-black self-start p-2 rounded w-[50px]'
-                >
-                  VIS
-                </button>
+                      type: actions.SHOW_PICK_FOOD_MODAL,
+                      payload: {
+                        show: true,
+                        currentFood: food,
+                      },
+                    });
+                  }}
+                />
               </div>
               <div className='flex text-start ml-12 items-center mr-5'>
                 <label
@@ -281,22 +398,36 @@ const CreateRecipe = () => {
                 >
                   Tilføj
                 </button>
-                <button
-                  onClick={() =>
-                    dispatch({
-                      type: actions.SHOW_INSTRUCTION_MODAL,
-                      payload: true,
-                    })
-                  }
-                  className='ml-4 bg-green-300 text-sm font-title uppercase text-black self-start p-2 rounded w-[50px]'
+              </div>
+              <div className='flex text-start ml-12 items-center mr-5'>
+                <label
+                  htmlFor='newInstruction'
+                  className='uppercase w-1/4 font-title text-sm self-start'
                 >
-                  VIS
+                  Instruktioner
+                  <br />
+                  ingredienser
+                </label>
+                <button
+                  onClick={() => {
+                    dispatch({
+                      type: actions.SHOW_INGREDIENTS_FOOD_MODAL,
+                      payload: true,
+                    });
+                  }}
+                  className='bg-green-300 text-sm font-title uppercase text-black self-start p-2 rounded flex-1'
+                >
+                  Vis ingredienser/instruktioner
                 </button>
               </div>
-
               <div className='flex text-start ml-12 items-center mr-5'>
                 <div className='w-1/4'></div>
-                <button className='flex-1 mb-5 bg-red-300 text-sm font-title font-bold uppercase text-black self-start p-2 rounded'>
+                <button
+                  onClick={() => {
+                    submitRecipe();
+                  }}
+                  className='flex-1 mb-5 bg-red-300 text-sm font-title font-bold uppercase text-black self-start p-2 rounded'
+                >
                   Upload opskrift
                 </button>
               </div>
@@ -331,24 +462,227 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   margin: `0 0 ${grid}px 0`,
   borderRadius: 7,
   // change background colour if dragging
-  color: isDragging ? 'black' : 'white',
-  background: isDragging ? 'lightgreen' : 'rgb(31 41 55)',
+  color: 'black',
+  background: isDragging ? 'lightgreen' : 'white',
   boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.43) 0px 3px 6px',
 
   // styles we need to apply on draggables
   ...draggableStyle,
 });
 const getListStyle = (isDraggingOver) => ({
-  background: isDraggingOver ? '#ffffff' : '#ffffff',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'start',
+  alignItems: 'start',
+  background: isDraggingOver ? 'transparent' : 'transparent',
   borderRadius: 7,
-  boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.53) 0px 3px 6px',
-  padding: grid * 4,
+  //boxShadow: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.53) 0px 3px 6px',
 });
 
-const InstructionModal = () => {
+const PickFoodModal = () => {
   const { state, dispatch } = useRecipeReducer();
 
-  function handleOnDragEnd(result) {
+  const addNewIngredient = (e) => {
+    e.preventDefault();
+    dispatch({ type: actions.NEW_INGREDIENT });
+  };
+
+  return (
+    <div
+      className={`fixed w-[calc(100%-5rem)] h-full duration-[450ms] overflow-y-auto ${
+        !state.foodModal.show && 'transform scale-0 opacity-0'
+      } bg-primary`}
+    >
+      <header className='relative'>
+        <BsX
+          size={35}
+          onClick={() =>
+            dispatch({
+              type: actions.SHOW_PICK_FOOD_MODAL,
+              payload: {
+                show: false,
+                currentFood: undefined,
+              },
+            })
+          }
+          className='absolute top-2 right-2 hover:animate-spin cursor-pointer fill-red-700 hover:fill-red-900'
+        />
+      </header>
+      <form
+        className='h-full flex flex-col justify-center items-center space-y-2'
+        onSubmit={(e) => {
+          addNewIngredient(e);
+        }}
+      >
+        <div className='bg-secondary shadow-form p-4 w-[500px] rounded'>
+          <h1 className='font-bold tracking-wide text-xl font-text'>
+            Ingrediens:
+          </h1>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1>Navn</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_name}
+              </h1>
+            </div>
+          </div>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1 className='font-title'>ID</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_id}
+              </h1>
+            </div>
+          </div>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1>Kj/Kcal</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_kj}kJ/
+                {state.foodModal.currentFood?.food_kcal}kcal
+              </h1>
+            </div>
+          </div>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1>Fedt</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_fat} f.
+              </h1>
+            </div>
+          </div>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1>Kulhydrater</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_carbs} k.
+              </h1>
+            </div>
+          </div>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1>Tilføjet sukkerarter</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_added_sugars} s.
+              </h1>
+            </div>
+          </div>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1>Protein</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_protein} p.
+              </h1>
+            </div>
+          </div>
+          <div className='flex'>
+            <div className='w-1/3 ml-5 font-title'>
+              <h1>Kostfibre</h1>
+            </div>
+            <div className='flex-1'>
+              <h1 className='font-title'>
+                {state.foodModal.currentFood?.food_fibers} kf.
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <textarea
+          value={state.foodModal.form.instruction}
+          name='instruction'
+          onChange={(e) => {
+            dispatch({
+              type: actions.CHANGE_FOOD_MODAL_FORM,
+              payload: { name: e.target.name, value: e.target.value },
+            });
+          }}
+          placeholder='Skriv instruks for den givne ingrediens..!'
+          className='border-0 w-[500px] h-14 rounded shadow-lg'
+        />
+
+        <div className='w-[500px] flex'>
+          <input
+            value={state.foodModal.form.grams}
+            name='grams'
+            onChange={(e) => {
+              dispatch({
+                type: actions.CHANGE_FOOD_MODAL_FORM,
+                payload: { name: e.target.name, value: e.target.value },
+              });
+            }}
+            placeholder='Mængde i GRAM'
+            step='0.01'
+            type='number'
+            className='w-full p-2 rounded shadow-lg border-0'
+          />
+        </div>
+        <div className='w-[500px] flex justify-between'>
+          <input
+            value={state.foodModal.form.amountOwnUnit}
+            name='amountOwnUnit'
+            onChange={(e) => {
+              dispatch({
+                type: actions.CHANGE_FOOD_MODAL_FORM,
+                payload: { name: e.target.name, value: e.target.value },
+              });
+            }}
+            placeholder='Mængde i egen måling'
+            step='0.01'
+            type='number'
+            className='p-2 rounded shadow-lg flex-1 mr-4 border-0'
+          />
+
+          <select
+            value={state.foodModal.form.unit}
+            name='unit'
+            onChange={(e) => {
+              dispatch({
+                type: actions.CHANGE_FOOD_MODAL_FORM,
+                payload: { name: e.target.name, value: e.target.value },
+              });
+            }}
+            className='border-0 rounded shadow-lg'
+          >
+            {state.measurements.map((measure) => {
+              return <option>{measure}</option>;
+            })}
+          </select>
+        </div>
+        <button className='w-[500px] bg-pink-300 p-4 rounded-lg font-title text-black tracking-wide font-extrabold uppercase shadow-pink transform duration-300 hover:bg-pink-400 hover:text-white hover:-translate-y-1'>
+          Tilføj ingrediens
+        </button>
+      </form>
+    </div>
+  );
+};
+
+const IngredientInstructionModal = () => {
+  const { state, dispatch } = useRecipeReducer();
+
+  function handleOnDragEndIngredients(result) {
+    if (!result.destination) return;
+
+    const items = Array.from(state.form.ingredients);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    dispatch({ type: actions.UPDATE_INGREDIENT, payload: items });
+  }
+  function handleOnDragEndInstructions(result) {
     if (!result.destination) return;
 
     const items = Array.from(state.form.instructions);
@@ -357,95 +691,185 @@ const InstructionModal = () => {
 
     dispatch({ type: actions.UPDATE_INSTRUCTIONS, payload: items });
   }
-
   return (
     <>
       <div
         className={`fixed w-[calc(100%-5rem)] h-full duration-[450ms] overflow-y-auto ${
-          !state.showInstructionModal && 'transform scale-0 opacity-0'
+          !state.showFoodAndInstructionModal && 'transform scale-0 opacity-0'
         } bg-primary`}
       >
-        <header className='flex flex-col'>
-          <div className='m-2 flex justify-between'>
-            <h1 className='font-title font-bold ml-6 tracking-widest uppercase text-2xl'>
-              Instruktioner
-            </h1>
-            <BsX
-              size={30}
-              onClick={() =>
-                dispatch({
-                  type: actions.SHOW_INSTRUCTION_MODAL,
-                  payload: false,
-                })
-              }
-              className='hover:animate-spin cursor-pointer fill-red-700 hover:fill-red-900'
-            />
-          </div>
-          <hr className='border-red-700' />
-          <div className='flex justify-center m-6 text-white'>
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-              <Droppable
-                key='new-recipe-instructions'
-                droppableId='new-recipe-instructions'
-              >
-                {(provided, snapshot) => (
-                  <div
-                    className='w-full'
-                    ref={provided.innerRef}
-                    style={getListStyle(snapshot.isDraggingOver)}
-                    {...provided.droppableProps}
-                  >
-                    {state.form.instructions.length > 0 ? (
-                      state.form.instructions.map((instruction, index) => (
-                        <Draggable
-                          key={instruction.id}
-                          draggableId={instruction.id}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={getItemStyle(
-                                snapshot.isDragging,
-                                provided.draggableProps.style
-                              )}
-                            >
-                              <div className='relative'>
-                                <h1 className='font-title text-md font-bold'>
-                                  {index + 1}.
-                                </h1>
-                                <p className='font-title text-sm'>
-                                  {instruction.instruction}
-                                </p>
-                                <AiTwotoneDelete
-                                  onClick={() => {
-                                    dispatch({
-                                      type: actions.DELETE_INSTRUCTION_BY_INSTRUCTION,
-                                      payload: instruction.instruction,
-                                    });
-                                  }}
-                                  className='absolute top-2 right-2 hover:fill-red-500 cursor-pointer hover:scale-105'
-                                />
+        <header className='flex h-full divide-x-2 divide-card divide-x-reverse relative'>
+          <BsX
+            size={30}
+            onClick={() =>
+              dispatch({
+                type: actions.SHOW_INGREDIENTS_FOOD_MODAL,
+                payload: false,
+              })
+            }
+            className='absolute top-0 right-0 hover:animate-spin cursor-pointer fill-white hover:fill-gray-400'
+          />
+
+          <div className='w-full h-full bg-primary'>
+            <div className='flex flex-col items-center text-white h-full'>
+              <DragDropContext onDragEnd={handleOnDragEndIngredients}>
+                <div className='w-full bg-card min-h-[150px] p-5'>
+                  <h1 className='font-title uppercase text-white font-extrabold text-2xl'>
+                    Ingredienser
+                  </h1>
+                  <p className='text-gray-300 font-title font-extrabold font-extrabold tracking-widest text-sm text-start'>
+                    Hver ingrediens er givet med en helt specifik instruktion
+                    for den givne ingrediens! Ryk rundt på ingredienserne,
+                  </p>
+                </div>
+                <Droppable
+                  key='new-recipe-ingredient'
+                  droppableId='new-recipe-ingredient'
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      className='w-full h-full p-5'
+                      ref={provided.innerRef}
+                      style={getListStyle(snapshot.isDraggingOver)}
+                      {...provided.droppableProps}
+                    >
+                      {state.form.ingredients.length > 0 ? (
+                        state.form.ingredients.map((ingredient, index) => (
+                          <Draggable
+                            key={ingredient.id}
+                            draggableId={ingredient.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className='w-full'
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <div className='relative'>
+                                  <h1 className='font-title text-md font-bold'>
+                                    {index + 1}.
+                                  </h1>
+                                  <span className='flex justify-between w-full font-title text-sm'>
+                                    <h1>Ingrediens:</h1>
+                                    <h1>{ingredient.ingredientByName}</h1>
+                                  </span>
+                                  <p className='flex justify-between w-full font-title text-sm'>
+                                    Mængde i gram: {ingredient.grams} gram |{' '}
+                                    {ingredient.amountOwnUnit} {ingredient.unit}
+                                  </p>
+                                  <p className='font-text text-xs'>
+                                    {ingredient.instruction}
+                                  </p>
+                                  <AiTwotoneDelete
+                                    onClick={() => {
+                                      console.log('delete');
+                                    }}
+                                    className='absolute top-2 right-2 hover:fill-red-500 cursor-pointer hover:scale-105'
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </Draggable>
-                      ))
-                    ) : (
-                      <div>
-                        <h1 className='text-black font-title text-red-800'>
-                          Der er ingen instruktioner på hvordan retten skal
-                          laves!
-                        </h1>
-                      </div>
-                    )}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+                            )}
+                          </Draggable>
+                        ))
+                      ) : (
+                        <div>
+                          <h1 className='text-black font-title text-red-800'>
+                            Der er ingen ingredienser på retten! Gå tilbage og
+                            tilføj nogen!
+                          </h1>
+                        </div>
+                      )}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </div>
+          </div>
+          <div className='w-full h-full bg-primary'>
+            <div className='flex flex-col items-center text-white h-full'>
+              <DragDropContext onDragEnd={handleOnDragEndInstructions}>
+                <div className='w-full bg-card min-h-[150px] p-5'>
+                  <h1 className='font-title uppercase text-white font-extrabold text-2xl'>
+                    Instruktion
+                  </h1>
+                  <p className='text-gray-300 font-title font-extrabold font-extrabold tracking-widest text-sm text-start'>
+                    Hver instruktion her repræsentere samlet set hvordan hele
+                    retten skal sammen sættes, og i hvilken rækkefølge de skal
+                    udføres i. Ryk rundt på rækkefølge alt efter hvordan
+                    instruktionerne skal følges.
+                  </p>
+                </div>
+                <Droppable
+                  key='new-recipe-instructions'
+                  droppableId='new-recipe-instructions'
+                >
+                  {(provided, snapshot) => (
+                    <div
+                      className='w-full h-full p-5'
+                      ref={provided.innerRef}
+                      style={getListStyle(snapshot.isDraggingOver)}
+                      {...provided.droppableProps}
+                    >
+                      {state.form.instructions.length > 0 ? (
+                        state.form.instructions.map((instruction, index) => (
+                          <Draggable
+                            key={instruction.id}
+                            draggableId={instruction.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                className='w-full'
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                              >
+                                <div className='relative'>
+                                  <h1 className='font-title text-md font-bold'>
+                                    {index + 1}.
+                                  </h1>
+                                  <p className='font-title text-sm'>
+                                    {instruction.instruction}
+                                  </p>
+                                  <AiTwotoneDelete
+                                    onClick={() => {
+                                      dispatch({
+                                        type: actions.DELETE_INSTRUCTION_BY_INSTRUCTION,
+                                        payload: instruction.instruction,
+                                      });
+                                    }}
+                                    className='absolute top-2 right-2 hover:fill-red-500 cursor-pointer hover:scale-105'
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))
+                      ) : (
+                        <div>
+                          <h1 className='text-black font-title text-red-800'>
+                            Der er ingen instruktioner på hvordan retten skal
+                            laves!
+                          </h1>
+                        </div>
+                      )}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            </div>
           </div>
         </header>
       </div>

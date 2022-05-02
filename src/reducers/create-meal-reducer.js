@@ -1,15 +1,21 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export const actions = {
   CHANGE_ALERT_STATE: 1,
   CHANGE_FORM_DATA: 2,
   CHANGE_FORM_BOOLEAN_DATA: 3,
-  SET_CATEGORIES: 4,
-  UPDATE_INSTRUCTIONS: 5,
-  SHOW_INSTRUCTION_MODAL: 6,
-  NEW_INSTRUCTION: 7,
-  DELETE_INSTRUCTION_BY_INSTRUCTION: 8,
-  UPDATE_FOOD: 9,
+  CHANGE_FOOD_MODAL_FORM: 4,
+  SET_CATEGORIES: 5,
+  UPDATE_INSTRUCTIONS: 6,
+  UPDATE_INGREDIENT: 7,
+  SHOW_INGREDIENTS_FOOD_MODAL: 8,
+  NEW_INSTRUCTION: 9,
+  NEW_INGREDIENT: 10,
+  DELETE_INSTRUCTION_BY_INSTRUCTION: 11,
+  UPDATE_FOOD: 12,
+  SHOW_PICK_FOOD_MODAL: 13,
+  SET_MEASUREMENTS: 14,
 };
-
 export const initialState = {
   alert: {
     show: false,
@@ -18,11 +24,25 @@ export const initialState = {
     message: '',
     isCloseable: true,
   },
-  showInstructionModal: false,
+  showFoodAndInstructionModal: false,
+  foodModal: {
+    show: false,
+    currentFood: undefined,
+    form: {
+      instruction: '',
+      grams: '',
+      amountOwnUnit: '',
+      unit: 'gram',
+    },
+  },
   categories: [],
   foods: [],
+  measurements: [],
+  pricePerServing: 0,
+  readyInMinutes: 0,
   form: {
     name: '',
+    type: '',
     picture: null,
     booleans: {
       isVegetarian: false,
@@ -34,11 +54,9 @@ export const initialState = {
       isPopular: false,
       isSustainable: false,
     },
-    type: '',
-    pricePerServing: 0,
-    readyInMinutes: 0,
     newInstruction: '',
     instructions: [],
+    ingredients: [],
   },
 };
 
@@ -80,14 +98,19 @@ export const reducer = (state, action) => {
         categories: action.payload,
       };
     case actions.UPDATE_INSTRUCTIONS:
-      const items = action.payload;
-      return { ...state, form: { ...state.form, instructions: items } };
-    case actions.SHOW_INSTRUCTION_MODAL:
+      return {
+        ...state,
+        form: { ...state.form, instructions: action.payload },
+      };
+    case actions.UPDATE_INGREDIENT:
+      return { ...state, form: { ...state.form, ingredients: action.payload } };
+    case actions.SHOW_INGREDIENTS_FOOD_MODAL: {
       const shouldShow = action.payload;
       return {
         ...state,
-        showInstructionModal: shouldShow,
+        showFoodAndInstructionModal: shouldShow,
       };
+    }
     case actions.NEW_INSTRUCTION:
       const instructions = Array.from(state.form.instructions);
       instructions.push({
@@ -144,6 +167,68 @@ export const reducer = (state, action) => {
       return {
         ...state,
         foods: foods,
+      };
+    }
+    case actions.SHOW_PICK_FOOD_MODAL:
+      /**
+       * currentFood and show
+       * */
+      const values = action.payload;
+
+      return {
+        ...state,
+        foodModal: {
+          form: {
+            instruction: undefined,
+            grams: undefined,
+            amountOwnUnit: undefined,
+            unit: undefined,
+          },
+          ...values,
+        },
+      };
+    case actions.SET_MEASUREMENTS: {
+      return { ...state, measurements: action.payload };
+    }
+    case actions.CHANGE_FOOD_MODAL_FORM: {
+      return {
+        ...state,
+        foodModal: {
+          ...state.foodModal,
+          form: {
+            ...state.foodModal.form,
+            [action.payload.name]: action.payload.value,
+          },
+        },
+      };
+    }
+    case actions.NEW_INGREDIENT: {
+      const newIngredient = {
+        id: uuidv4(),
+        ingredientById: state.foodModal?.currentFood?.food_id,
+        ingredientByName: state.foodModal?.currentFood?.food_name,
+        instruction: state.foodModal.form?.instruction,
+        grams: state.foodModal.form?.grams,
+        amountOwnUnit: state.foodModal.form?.amountOwnUnit,
+        unit: state.foodModal.form?.unit,
+      };
+
+      return {
+        ...state,
+        foodModal: {
+          form: {
+            instruction: '',
+            grams: '',
+            amountOwnUnit: '',
+            unit: 'gram',
+          },
+          currentFood: undefined,
+          show: false,
+        },
+        form: {
+          ...state.form,
+          ingredients: [...state.form.ingredients, newIngredient],
+        },
       };
     }
     default:

@@ -7,6 +7,9 @@ class FoodService {
   async getAllFoodDTOs() {
     return axios.get(BASE_API_URL, axiosRequestConfig);
   }
+  async getFoodDTOById(id) {
+    return axios.get(`${BASE_API_URL}/${id}`);
+  }
 }
 
 export default new FoodService();

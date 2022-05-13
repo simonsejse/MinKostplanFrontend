@@ -10,7 +10,7 @@ import authService from '../services/auth/auth.service';
 /**
  * Svgs
  */
-import { BiFoodMenu, BiSupport } from 'react-icons/bi';
+import { BiFoodMenu, BiSupport, BiUpvote } from 'react-icons/bi';
 import { BsChevronDown } from 'react-icons/bs';
 import { MdOutlineSpaceDashboard, MdAdminPanelSettings } from 'react-icons/md';
 import { IoMdInformationCircleOutline } from 'react-icons/io';
@@ -117,9 +117,9 @@ const Sidebar = () => {
               dispatch({ type: actions.SWITCH_TAB, payload: 'home' });
               navigate('/home');
             }}
-            className={`relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer text-white ${
+            className={`relative flex items-center hover:text-gray-200 hover:bg-button space-x-2  p-2 cursor-pointer text-white ${
               navState.full ? 'justify-start' : 'sm:justify-center'
-            } ${navState.active === 'home' && 'bg-accent'}`}
+            } ${navState.active === 'home' && 'bg-button'}`}
           >
             <MdOutlineSpaceDashboard className='h-6 w-6' />
             <h1 className={`${!navState.full && 'sm:hidden'}`}>Hjem</h1>
@@ -135,7 +135,7 @@ const Sidebar = () => {
                   payload: 'dpDropdown',
                 });
               }}
-              className={`flex justify-between text-gray-400 hover:text-gray-200 hover:bg-accent items-center space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`flex justify-between text-gray-400 hover:text-gray-200 hover:bg-button items-center space-x-2  p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
               }`}
             >
@@ -171,8 +171,8 @@ const Sidebar = () => {
                       navigate('/diets');
                     }}
                     className={`w-full h-full text-white ${
-                      navState.full ? 'p-2 rounded-md' : 'p-1 rounded-md'
-                    } ${navState.active === 'diets' && 'bg-accent'}`}
+                      navState.full ? 'p-2 ' : 'p-1 '
+                    } ${navState.active === 'diets' && 'bg-button'}`}
                   >
                     <h1 className='hover:text-gray-200 cursor-pointer'>
                       Dine kostplaner
@@ -187,8 +187,8 @@ const Sidebar = () => {
                       navigate('/create-diet-plan');
                     }}
                     className={`w-full h-full text-white ${
-                      navState.full ? 'p-2 rounded-md' : 'p-3 rounded-md'
-                    } ${navState.active === 'create-diet-plan' && 'bg-accent'}`}
+                      navState.full ? 'p-2 ' : 'p-3 '
+                    } ${navState.active === 'create-diet-plan' && 'bg-button'}`}
                   >
                     <h1 className='hover:text-gray-200 cursor-pointer'>
                       Opret kostplan
@@ -208,13 +208,33 @@ const Sidebar = () => {
                 });
                 navigate('/create-recipe');
               }}
-              className={`relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer text-white ${
+              className={`relative flex items-center hover:text-gray-200 hover:bg-button space-x-2  p-2 cursor-pointer text-white ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
-              } ${navState.active === 'create-recipe' && 'bg-red-600'}`}
+              } ${navState.active === 'create-recipe' && 'bg-button'}`}
             >
               <GiHotMeal className='h-6 w-6' />
               <h1 className={`${!navState.full && 'sm:hidden'}`}>
                 Opret måltid
+              </h1>
+            </div>
+            <hr className='border-gray-700' />
+
+            {/* Upvote downvote meals */}
+            <div
+              onClick={() => {
+                dispatch({
+                  type: actions.SWITCH_TAB,
+                  payload: 'manage-recipes',
+                });
+                navigate('/manage/recipes');
+              }}
+              className={`relative flex items-center hover:text-gray-200 hover:bg-button space-x-2  p-2 cursor-pointer text-white ${
+                navState.full ? 'justify-start' : 'sm:justify-center'
+              } ${navState.active === 'manage-recipes' && 'bg-button'}`}
+            >
+              <BiUpvote className='h-6 w-6' />
+              <h1 className={`${!navState.full && 'sm:hidden'}`}>
+                Andres opskrifter
               </h1>
             </div>
             <hr className='border-gray-700' />
@@ -225,9 +245,9 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'membership' });
                 navigate('/membership');
               }}
-              className={`relative flex items-center text-white hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`relative flex items-center text-white hover:text-gray-200 hover:bg-button space-x-2 p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
-              } ${navState.active === 'membership' && 'bg-accent'}`}
+              } ${navState.active === 'membership' && 'bg-button'}`}
             >
               <GiShoppingCart className='h-6 w-6' />
               <h1 className={`${!navState.full && 'sm:hidden'}`}>
@@ -242,9 +262,9 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'about' });
                 navigate('/about');
               }}
-              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-button space-x-2  p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
-              } ${navState.active === 'about' && 'bg-accent'}`}
+              } ${navState.active === 'about' && 'bg-button'}`}
             >
               <IoMdInformationCircleOutline className='h-6 w-6' />
               <h1 className={`${!navState.full && 'sm:hidden'}`}>Om</h1>
@@ -257,9 +277,9 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'support' });
                 navigate('/support');
               }}
-              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-button space-x-2 p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
-              } ${navState.active === 'support' && 'bg-accent'}`}
+              } ${navState.active === 'support' && 'bg-button'}`}
             >
               <BiSupport className='h-6 w-6' />
               <h1 className={`${!navState.full && 'sm:hidden'}`}>Support</h1>
@@ -272,9 +292,9 @@ const Sidebar = () => {
                 dispatch({ type: actions.SWITCH_TAB, payload: 'settings' });
                 navigate('/settings');
               }}
-              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-accent space-x-2 rounded-md p-2 cursor-pointer ${
+              className={`text-white relative flex items-center hover:text-gray-200 hover:bg-button space-x-2 p-2 cursor-pointer ${
                 navState.full ? 'justify-start' : 'sm:justify-center'
-              } ${navState.active === 'settings' && 'bg-accent'}`}
+              } ${navState.active === 'settings' && 'bg-button'}`}
             >
               <FiSettings className='h-6 w-6' />
               <h1 className={`${!navState.full && 'sm:hidden'}`}>
@@ -293,7 +313,7 @@ const Sidebar = () => {
                         payload: 'adminDropdown',
                       });
                     }}
-                    className={`flex justify-between text-gray-400 hover:text-gray-200 hover:bg-accent items-center space-x-2 rounded-md p-2 cursor-pointer ${
+                    className={`flex justify-between text-gray-400 hover:text-gray-200 hover:bg-button items-center space-x-2  p-2 cursor-pointer ${
                       navState.full ? 'justify-start' : 'sm:justify-center'
                     }`}
                   >
@@ -314,7 +334,7 @@ const Sidebar = () => {
                   <hr className='border-gray-700' />
                   {/* Dropdown Items */}
 
-                  {navState.adminDropdown.open && (
+                  {/*navState.adminDropdown.open && (
                     <>
                       <div
                         className={`text-gray-400 space-y-3 ${
@@ -327,24 +347,24 @@ const Sidebar = () => {
                           onClick={() => {
                             dispatch({
                               type: actions.SWITCH_TAB,
-                              payload: 'create-meal',
+                              payload: 'manage-recipes',
                             });
-                            navigate('/admin/create-meal');
+                            navigate('/admin/manage/recipes');
                           }}
                           className={`text-white w-full h-full ${
-                            navState.full ? 'p-2 rounded-md' : 'p-3 rounded-md'
+                            navState.full ? 'p-2 ' : 'p-3 '
                           } ${
-                            navState.active === 'create-meal' && 'bg-accent'
+                            navState.active === 'manage-recipes' && 'bg-red-700'
                           }`}
                         >
                           <h1 className='hover:text-gray-200 cursor-pointer'>
-                            Smth
+                            Administrer opskrifter
                           </h1>
                         </div>
                       </div>
                       <hr className='border-gray-700' />
                     </>
-                  )}
+                        )*/}
                 </div>
               </>
             )}

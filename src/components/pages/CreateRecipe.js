@@ -1,7 +1,13 @@
 /**
  * React stuff
  */
-import React, { useReducer, useState, useEffect, useContext } from 'react';
+import React, {
+  useReducer,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from 'react';
 /**
  * Contexts
  */
@@ -18,6 +24,8 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 /**
  * Services
  */
+import { v4 as uuidv4 } from 'uuid';
+
 import recipeService from '../../services/recipe/recipe.service';
 import foodService from '../../services/food/food.service';
 import measurementService from '../../services/measures/measurement.service';
@@ -113,9 +121,11 @@ const CreateRecipe = () => {
     measurementService
       .getAvailableMeasurements()
       .then((res) => {
+        console.log(res.data);
         dispatch({ type: actions.SET_MEASUREMENTS, payload: res.data });
       })
       .catch((err) => {
+        console.log(err);
         dispatch({
           type: actions.CHANGE_ALERT_STATE,
           payload: {
@@ -150,7 +160,9 @@ const CreateRecipe = () => {
   const createRecipeDTO = () => {
     return {
       name: state.form.name,
+      description: state.form.description,
       type: state.form.type,
+      image: 'DSC_0012.JPG',
       vegetarian: state.form.booleans.isVegetarian,
       vegan: state.form.booleans.isVegan,
       glutenFree: state.form.booleans.isGlutenFree,
@@ -159,33 +171,30 @@ const CreateRecipe = () => {
       cheap: state.form.booleans.isCheap,
       veryPopular: state.form.booleans.isPopular,
       sustainable: state.form.booleans.isSustainable,
-
+      readyInMinutes: state.form.readyInMinutes,
       pricePerServing: state.form.pricePerServing,
-      instructions: `<li>
+      instructions: `<ul>
         ${state.form.instructions.map((instruction) => {
-          return `<ol>${instruction}</ol>`;
-        })}
-      </li>`,
-      image: state.form.image,
+          return `<li>${instruction.instruction}</li>`;
+        })}</ul>`,
       ingredients: [
         ...state.form.ingredients.map((ingredient) => {
           return {
             foodId: ingredient.ingredientById,
             amount: ingredient.grams,
-            instruction: ingredient.instruction,
             measures: {
               type: ingredient.unit,
               amountOfType: ingredient.amountOwnUnit,
               amountInGrams: ingredient.grams,
             },
-            meta: [],
+            meta: ingredient.metaList.map((meta) => meta.name),
           };
         }),
       ],
       analyzedInstructions: [
         ...state.form.instructions.map((instruction, idx) => {
           return {
-            number: { idx },
+            number: idx,
             step: instruction.instruction,
           };
         }),
@@ -197,10 +206,11 @@ const CreateRecipe = () => {
     const recipe = createRecipeDTO();
     recipeService.newRecipe(recipe).then(
       (res) => {
+        console.log(recipe);
         console.log('success');
       },
       (error) => {
-        console.log(error.response.data);
+        console.log(error.response);
         dispatch({
           type: actions.CHANGE_ALERT_STATE,
           payload: {
@@ -208,7 +218,7 @@ const CreateRecipe = () => {
             isError: true,
             isCloseable: true,
             title: 'Kunne ikke uploade ny opskrift!',
-            message: error.response.data.message,
+            message: error.response.data?.errors || error.response.data?.error,
           },
         });
       }
@@ -259,6 +269,30 @@ const CreateRecipe = () => {
                   }}
                   type='text'
                   placeholder='Opskrift navn'
+                />
+              </div>
+              <div className='flex text-start ml-12 items-center mr-5'>
+                <label
+                  htmlFor='foodDescription'
+                  className='uppercase w-1/4 font-title text-sm self-start'
+                >
+                  Beskrivelse
+                </label>
+                <textarea
+                  className='flex-1 text-sm font-text appearance-none min-h-[52px] h-[52px] block bg-gray-100 text-black border border-gray-200 rounded py-2 px-2 leading-tight focus:outline-none focus:bg-white focus:border-gray-500'
+                  id='foodDescription'
+                  name='description'
+                  value={state.form.description}
+                  onChange={(e) =>
+                    dispatch({
+                      type: actions.CHANGE_FORM_DATA,
+                      payload: {
+                        dataToBeChanged: e.target.name,
+                        value: e.target.value,
+                      },
+                    })
+                  }
+                  placeholder='Giv kort introduktion til opskriften!'
                 />
               </div>
               <div className='flex text-start ml-12 items-center mr-5'>
@@ -448,6 +482,62 @@ const CreateRecipe = () => {
               man til sidst efter 50 optjente point, kan få gratis medlemsskab.
               Som tak for ens bidrag.
             </p>
+            <div className='w-[350px] min-h-[46px] max-h-[450px] overflow-y-auto mt-5 flex bg-secondary shadow-form p-2 rounded-lg'>
+              <ul className='w-full flex-wrap flex -m-[10px] flex-row pl-0'>
+                <h1 className='w-full m-[10px] font-extrabold font-title text-xl'>
+                  Opskrift tags
+                  <i className='flex font-title text-sm'>
+                    Gør retten nemmere at finde ved hjælp af søge tags!
+                  </i>
+                </h1>
+
+                {/*state.foodModal.form.metaList.map((meta) => {
+                  return (
+                    <li
+                      key={meta.id}
+                      className='m-[10px] relative flex items-center w-auto text-white mr-2 p-2 pr-8 bg-blue-500 hover:bg-blue-400 rounded-md'
+                    >
+                      <span className='font-title'>{meta.name}</span>
+                      <BsX
+                        size={35}
+                        fill='white'
+                        onClick={() => {
+                          dispatch({
+                            type: actions.DELETE_META_BY_ID,
+                            payload: meta.id,
+                          });
+                        }}
+                        className='absolute right-0 cursor-pointer'
+                      />
+                    </li>
+                  );
+                })*/}
+                <input
+                  type='text'
+                  placeholder='Tilføj opskrift tag'
+                  name='meta'
+                  value={state.foodModal.form.meta}
+                  onChange={(e) => {
+                    dispatch({
+                      type: actions.CHANGE_FOOD_MODAL_FORM,
+                      payload: { name: e.target.name, value: e.target.value },
+                    });
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      const newMeta = {
+                        id: uuidv4(),
+                        name: state.foodModal.form.meta,
+                      };
+                      dispatch({ type: actions.NEW_META, payload: newMeta });
+                      dispatch({ type: actions.RESET_META_FORM });
+                    }
+                  }}
+                  className='flex-1 border-0 focus:ring-0 focus:outline-none p-2 m-[10px]'
+                />
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -482,9 +572,19 @@ const getListStyle = (isDraggingOver) => ({
 const PickFoodModal = () => {
   const { state, dispatch } = useRecipeReducer();
 
-  const addNewIngredient = (e) => {
-    e.preventDefault();
-    dispatch({ type: actions.NEW_INGREDIENT });
+  const addNewIngredient = () => {
+    const newIngredient = {
+      id: uuidv4(),
+      ingredientById: state.foodModal?.currentFood?.food_id,
+      ingredientByName: state.foodModal?.currentFood?.food_name,
+      grams: state.foodModal.form?.grams,
+      amountOwnUnit: state.foodModal.form?.amountOwnUnit,
+      unit: state.foodModal.form?.unit,
+      metaList: state.foodModal.form?.metaList,
+    };
+
+    dispatch({ type: actions.NEW_INGREDIENT, payload: newIngredient });
+    dispatch({ type: actions.RESET_INGREDIENT_FORM });
   };
 
   return (
@@ -511,7 +611,7 @@ const PickFoodModal = () => {
       <form
         className='h-full flex flex-col justify-center items-center space-y-2'
         onSubmit={(e) => {
-          addNewIngredient(e);
+          e.preventDefault();
         }}
       >
         <div className='bg-secondary shadow-form p-4 w-[500px] rounded'>
@@ -600,20 +700,55 @@ const PickFoodModal = () => {
             </div>
           </div>
         </div>
-
-        <textarea
-          value={state.foodModal.form.instruction}
-          name='instruction'
-          onChange={(e) => {
-            dispatch({
-              type: actions.CHANGE_FOOD_MODAL_FORM,
-              payload: { name: e.target.name, value: e.target.value },
-            });
-          }}
-          placeholder='Skriv instruks for den givne ingrediens..!'
-          className='border-0 w-[500px] h-14 rounded shadow-lg'
-        />
-
+        <div className='w-[500px] min-h-[46px] flex bg-secondary shadow-lg p-2 rounded'>
+          <ul className='w-full flex-wrap flex -m-[10px] flex-row pl-0'>
+            {state.foodModal.form.metaList.map((meta) => {
+              return (
+                <li
+                  key={meta.id}
+                  className='m-[10px] relative flex items-center w-auto text-white mr-2 p-2 pr-8 bg-blue-500 hover:bg-blue-400 rounded-md'
+                >
+                  <span className='font-title'>{meta.name}</span>
+                  <BsX
+                    size={35}
+                    fill='white'
+                    onClick={() => {
+                      dispatch({
+                        type: actions.DELETE_META_BY_ID,
+                        payload: meta.id,
+                      });
+                    }}
+                    className='absolute right-0 cursor-pointer'
+                  />
+                </li>
+              );
+            })}
+            <input
+              type='text'
+              placeholder='Tilføj ingrediens meta'
+              name='meta'
+              value={state.foodModal.form.meta}
+              onChange={(e) => {
+                dispatch({
+                  type: actions.CHANGE_FOOD_MODAL_FORM,
+                  payload: { name: e.target.name, value: e.target.value },
+                });
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  const newMeta = {
+                    id: uuidv4(),
+                    name: state.foodModal.form.meta,
+                  };
+                  dispatch({ type: actions.NEW_META, payload: newMeta });
+                  dispatch({ type: actions.RESET_META_FORM });
+                }
+              }}
+              className='flex-1 border-0 focus:ring-0 focus:outline-none p-2 m-[10px]'
+            />
+          </ul>
+        </div>
         <div className='w-[500px] flex'>
           <input
             value={state.foodModal.form.grams}
@@ -647,22 +782,34 @@ const PickFoodModal = () => {
           />
 
           <select
-            value={state.foodModal.form.unit}
             name='unit'
+            value={state.foodModal.form.unit}
             onChange={(e) => {
               dispatch({
                 type: actions.CHANGE_FOOD_MODAL_FORM,
-                payload: { name: e.target.name, value: e.target.value },
+                payload: {
+                  name: e.target.name,
+                  value: e.target.value,
+                },
               });
             }}
             className='border-0 rounded shadow-lg'
           >
             {state.measurements.map((measure) => {
-              return <option>{measure}</option>;
+              return (
+                <option key={measure.name} value={measure.name}>
+                  {measure.displayName}
+                </option>
+              );
             })}
           </select>
         </div>
-        <button className='w-[500px] bg-pink-300 p-4 rounded-lg font-title text-black tracking-wide font-extrabold uppercase shadow-pink transform duration-300 hover:bg-pink-400 hover:text-white hover:-translate-y-1'>
+        <button
+          onClick={() => {
+            addNewIngredient();
+          }}
+          className='w-[500px] bg-pink-300 p-4 rounded-lg font-title text-black tracking-wide font-extrabold uppercase shadow-pink transform duration-300 hover:bg-pink-400 hover:text-white hover:-translate-y-1'
+        >
           Tilføj ingrediens
         </button>
       </form>
@@ -673,15 +820,6 @@ const PickFoodModal = () => {
 const IngredientInstructionModal = () => {
   const { state, dispatch } = useRecipeReducer();
 
-  function handleOnDragEndIngredients(result) {
-    if (!result.destination) return;
-
-    const items = Array.from(state.form.ingredients);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    dispatch({ type: actions.UPDATE_INGREDIENT, payload: items });
-  }
   function handleOnDragEndInstructions(result) {
     if (!result.destination) return;
 
@@ -712,84 +850,71 @@ const IngredientInstructionModal = () => {
 
           <div className='w-full h-full bg-primary'>
             <div className='flex flex-col items-center text-white h-full'>
-              <DragDropContext onDragEnd={handleOnDragEndIngredients}>
-                <div className='w-full bg-card min-h-[150px] p-5'>
-                  <h1 className='font-title uppercase text-white font-extrabold text-2xl'>
-                    Ingredienser
-                  </h1>
-                  <p className='text-gray-300 font-title font-extrabold font-extrabold tracking-widest text-sm text-start'>
-                    Hver ingrediens er givet med en helt specifik instruktion
-                    for den givne ingrediens! Ryk rundt på ingredienserne,
-                  </p>
-                </div>
-                <Droppable
-                  key='new-recipe-ingredient'
-                  droppableId='new-recipe-ingredient'
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      className='w-full h-full p-5'
-                      ref={provided.innerRef}
-                      style={getListStyle(snapshot.isDraggingOver)}
-                      {...provided.droppableProps}
-                    >
-                      {state.form.ingredients.length > 0 ? (
-                        state.form.ingredients.map((ingredient, index) => (
-                          <Draggable
-                            key={ingredient.id}
-                            draggableId={ingredient.id}
-                            index={index}
-                          >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className='w-full'
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                              >
-                                <div className='relative'>
-                                  <h1 className='font-title text-md font-bold'>
-                                    {index + 1}.
-                                  </h1>
-                                  <span className='flex justify-between w-full font-title text-sm'>
-                                    <h1>Ingrediens:</h1>
-                                    <h1>{ingredient.ingredientByName}</h1>
-                                  </span>
-                                  <p className='flex justify-between w-full font-title text-sm'>
-                                    Mængde i gram: {ingredient.grams} gram |{' '}
-                                    {ingredient.amountOwnUnit} {ingredient.unit}
-                                  </p>
-                                  <p className='font-text text-xs'>
-                                    {ingredient.instruction}
-                                  </p>
-                                  <AiTwotoneDelete
-                                    onClick={() => {
-                                      console.log('delete');
-                                    }}
-                                    className='absolute top-2 right-2 hover:fill-red-500 cursor-pointer hover:scale-105'
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))
-                      ) : (
-                        <div>
-                          <h1 className='text-black font-title text-red-800'>
-                            Der er ingen ingredienser på retten! Gå tilbage og
-                            tilføj nogen!
-                          </h1>
-                        </div>
-                      )}
-                      {provided.placeholder}
+              <div className='w-full bg-card min-h-[150px] p-5'>
+                <h1 className='font-title uppercase text-white font-extrabold text-2xl'>
+                  Ingredienser
+                </h1>
+                <p className='text-gray-300 font-title font-extrabold font-extrabold tracking-widest text-sm text-start'>
+                  Hver ingrediens er givet med en helt specifik instruktion for
+                  den givne ingrediens! Ryk rundt på ingredienserne,
+                </p>
+              </div>
+              <div className='w-full h-full p-5'>
+                {state.form.ingredients.length > 0 ? (
+                  state.form.ingredients.map((ingredient, index) => (
+                    <div className='w-full'>
+                      <div className='relative shadow-form bg-secondary rounded-lg p-5 text-black'>
+                        <h1 className='font-title text-md font-bold'>
+                          {index + 1}.
+                        </h1>
+                        <span className='flex justify-between w-full font-title text-sm'>
+                          <h1>Ingrediens:</h1>
+                          <h1>{ingredient?.ingredientByName}</h1>
+                        </span>
+                        <p className='flex justify-between w-full font-title text-sm'>
+                          {ingredient?.grams} gram | {ingredient?.amountOwnUnit}{' '}
+                          {
+                            state.measurements.find((measure) => {
+                              console.log(measure);
+                              console.log(ingredient?.unit);
+                              return measure.name === ingredient.unit;
+                            })?.displayName
+                          }
+                        </p>
+                        {ingredient.metaList.length > 0 && (
+                          <p>
+                            Tags:{' '}
+                            {ingredient.metaList.map((meta) => {
+                              return (
+                                <span className='after:content-[",_"] last:after:content-["."]'>
+                                  {meta.name}
+                                </span>
+                              );
+                            })}
+                          </p>
+                        )}
+                        <AiTwotoneDelete
+                          onClick={() => {
+                            dispatch({
+                              type: actions.DELETE_INGREDIENT_BY_ID,
+                              payload: ingredient.id,
+                            });
+                          }}
+                          className='absolute top-2 right-2 hover:fill-red-500 cursor-pointer hover:scale-105'
+                        />
+                      </div>
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
+                  ))
+                ) : (
+                  <div>
+                    <h1 className='text-black font-title text-red-800'>
+                      Der er ingen ingredienser på retten! Gå tilbage og tilføj
+                      nogen!
+                    </h1>
+                  </div>
+                )}
+              </div>
+              )}
             </div>
           </div>
           <div className='w-full h-full bg-primary'>

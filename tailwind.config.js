@@ -12,12 +12,15 @@ module.exports = {
       },
       height: {
         90: '90%',
+        '85-per': '85%',
       },
       width: {
         90: '90%',
+        95: '95%',
       },
       fontFamily: {
         title: 'Roboto',
+        title2: 'Inter',
         text: 'Open Sans',
         text2: 'Times New Roman',
       },
@@ -27,6 +30,7 @@ module.exports = {
         accent: '#ff3f48',
         button: '#444444',
         card: 'rgb(31 41 55)',
+        modalBackdrop: 'rgba(0,0,0,0.6)',
         gray: {
           400: '#969798',
           500: '#666666',

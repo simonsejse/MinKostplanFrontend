@@ -1,0 +1,3 @@
+[ ] - få læst op på useRef - sygt smart at implementere htmlelementer som f.eks. Modal.js
+[ ] - skift ingredients eller instructions id ud med uuidv4 i stedet for string navn som id
+[ ] - lav alert.js som Modal hvor vi bruger useRef til show() og hide() og animate={{}} og exit={{}}

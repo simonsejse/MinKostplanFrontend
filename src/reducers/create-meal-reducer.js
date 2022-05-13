@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 export const actions = {
   CHANGE_ALERT_STATE: 1,
   CHANGE_FORM_DATA: 2,
@@ -11,10 +9,14 @@ export const actions = {
   SHOW_INGREDIENTS_FOOD_MODAL: 8,
   NEW_INSTRUCTION: 9,
   NEW_INGREDIENT: 10,
-  DELETE_INSTRUCTION_BY_INSTRUCTION: 11,
-  UPDATE_FOOD: 12,
-  SHOW_PICK_FOOD_MODAL: 13,
-  SET_MEASUREMENTS: 14,
+  NEW_META: 11,
+  DELETE_INSTRUCTION_BY_INSTRUCTION: 12,
+  DELETE_INGREDIENT_BY_ID: 13,
+  UPDATE_FOOD: 14,
+  SHOW_PICK_FOOD_MODAL: 15,
+  SET_MEASUREMENTS: 16,
+  RESET_INGREDIENT_FORM: 17,
+  RESET_META_FORM: 18,
 };
 export const initialState = {
   alert: {
@@ -29,10 +31,11 @@ export const initialState = {
     show: false,
     currentFood: undefined,
     form: {
-      instruction: '',
       grams: '',
       amountOwnUnit: '',
-      unit: 'gram',
+      metaList: [],
+      meta: '',
+      unit: 'GRAMS',
     },
   },
   categories: [],
@@ -42,6 +45,7 @@ export const initialState = {
   readyInMinutes: 0,
   form: {
     name: '',
+    description: '',
     type: '',
     picture: null,
     booleans: {
@@ -71,12 +75,11 @@ export const reducer = (state, action) => {
         },
       };
     case actions.CHANGE_FORM_DATA:
-      const form = action.payload;
       return {
         ...state,
         form: {
           ...state.form,
-          [form.dataToBeChanged]: form.value,
+          [action.payload.dataToBeChanged]: action.payload.value,
         },
       };
     case actions.CHANGE_FORM_BOOLEAN_DATA:
@@ -137,6 +140,37 @@ export const reducer = (state, action) => {
           instructions: instructions,
         },
       };
+    case actions.NEW_META:
+      const meta = action.payload;
+      return {
+        ...state,
+        foodModal: {
+          ...state.foodModal,
+          form: {
+            ...state.foodModal.form,
+            metaList: [...state.foodModal.form.metaList, meta],
+          },
+        },
+      };
+    case actions.DELETE_INGREDIENT_BY_ID:
+      return {
+        ...state,
+        alert: {
+          show: true,
+          isError: true,
+          title: 'Slettet ingrediens!',
+          message: `Du har slettet ingrediens med (ID:${action.payload}) fra din ret.`,
+          isCloseable: true,
+        },
+        form: {
+          ...state.form,
+          ingredients: [
+            ...state.form.ingredients.filter(
+              (ingredient) => ingredient.id !== action.payload
+            ),
+          ],
+        },
+      };
     case actions.DELETE_INSTRUCTION_BY_INSTRUCTION: {
       const instructions = state.form.instructions.filter(
         (instruction) => instruction.instruction !== action.payload
@@ -162,6 +196,22 @@ export const reducer = (state, action) => {
         },
       };
     }
+    case actions.DELETE_META_BY_ID: {
+      return {
+        ...state,
+        foodModal: {
+          ...state.foodModal,
+          form: {
+            ...state.foodModal.form,
+            metaList: [
+              ...state.foodModal.form.metaList.filter(
+                (meta) => meta.id !== action.payload
+              ),
+            ],
+          },
+        },
+      };
+    }
     case actions.UPDATE_FOOD: {
       const foods = action.payload;
       return {
@@ -178,12 +228,7 @@ export const reducer = (state, action) => {
       return {
         ...state,
         foodModal: {
-          form: {
-            instruction: undefined,
-            grams: undefined,
-            amountOwnUnit: undefined,
-            unit: undefined,
-          },
+          ...state.foodModal,
           ...values,
         },
       };
@@ -202,29 +247,39 @@ export const reducer = (state, action) => {
         },
       };
     }
-    case actions.NEW_INGREDIENT: {
-      const newIngredient = {
-        id: uuidv4(),
-        ingredientById: state.foodModal?.currentFood?.food_id,
-        ingredientByName: state.foodModal?.currentFood?.food_name,
-        instruction: state.foodModal.form?.instruction,
-        grams: state.foodModal.form?.grams,
-        amountOwnUnit: state.foodModal.form?.amountOwnUnit,
-        unit: state.foodModal.form?.unit,
-      };
-
+    case actions.RESET_INGREDIENT_FORM: {
       return {
         ...state,
         foodModal: {
+          show: false,
+          currentFood: undefined,
           form: {
-            instruction: '',
             grams: '',
             amountOwnUnit: '',
-            unit: 'gram',
+            metaList: [],
+            meta: '',
+            unit: 'GRAMS',
           },
-          currentFood: undefined,
-          show: false,
         },
+      };
+    }
+    case actions.RESET_META_FORM: {
+      return {
+        ...state,
+        foodModal: {
+          ...state.foodModal,
+          form: {
+            ...state.foodModal.form,
+            meta: '',
+          },
+        },
+      };
+    }
+    case actions.NEW_INGREDIENT: {
+      const newIngredient = action.payload;
+
+      return {
+        ...state,
         form: {
           ...state.form,
           ingredients: [...state.form.ingredients, newIngredient],

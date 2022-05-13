@@ -15,6 +15,7 @@ import Error from './Error404';
 import About from './pages/About';
 import CreateRecipe from './pages/CreateRecipe';
 import Support from './pages/Support';
+import ManageRecipes from './pages/ManageRecipes';
 import { DragDropContext } from 'react-beautiful-dnd';
 /**
  * Custom React Providers
@@ -82,7 +83,6 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-
             <Route
               exact
               path='about'
@@ -107,6 +107,15 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <CreateRecipe />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              exact
+              path='manage/recipes'
+              element={
+                <ProtectedRoute>
+                  <ManageRecipes />
                 </ProtectedRoute>
               }
             />

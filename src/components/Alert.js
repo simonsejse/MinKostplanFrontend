@@ -1,99 +1,159 @@
-const Alert = ({
-  show,
-  isError,
-  title,
-  message,
-  handleOnClose,
-  isCloseable,
-}) => {
+import { forwardRef, useRef, useState, useImperativeHandle } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaRegSadTear, FaRegSmileBeam } from 'react-icons/fa';
+import { GoThumbsup } from 'react-icons/go';
+import { AiOutlineMessage } from 'react-icons/ai';
+const Alert = forwardRef(({ children, isCloseable, isError }, ref) => {
+  const [show, setShow] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    show: () => setShow(true),
+    hide: () => setShow(false),
+  }));
+
   return (
-    <div
-      className={`z-10 fixed w-full h-full transition duration-300 ease-out ${
-        !show && 'scale-0'
-      }`}
-    >
-      <div className='h-full flex justify-center items-center'>
-        <div
-          id='alert-additional-content-2'
-          className={`transform duration-300 w-full ml-2 mr-2 md:ml-0 md:mr-0 md:w-3/5 lg:w-2/5 xl:w-2/6 p-4 mb-4 rounded-lg ${
-            isError ? 'bg-red-200' : 'bg-green-200'
-          }`}
-          role='alert'
-        >
-          <div class='flex items-center'>
-            <svg
-              className={`animate-pulse mr-2 w-5 h-5 ${
-                isError
-                  ? 'text-red-700 dark:text-red-800'
-                  : 'text-green-700 dark:text-green-800'
-              }`}
-              fill='currentColor'
-              viewBox='0 0 20 20'
-            >
-              <path
-                fillRule='evenodd'
-                d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z'
-                clipRule='evenodd'
-              ></path>
-            </svg>
-            <h3
-              className={`animate-pulse text-lg font-medium ${
-                isError
-                  ? 'text-red-700 dark:text-red-800'
-                  : 'text-green-700 dark:text-green-800'
-              }`}
-            >
-              {title || 'Info'}
-            </h3>
-          </div>
-          <div
-            className={`overflow-auto mt-2 mb-4 text-sm ${
-              isError ? 'text-red-800' : 'text-green-800'
-            }`}
+    <AnimatePresence>
+      {show && (
+        <>
+          <motion.div
+            id='backdrop'
+            initial={{ opacity: 0, transition: { duration: 0.3 } }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.4, delay: 0.4 } }}
+            onClick={() => {
+              if (!isCloseable) return;
+              setShow(false);
+            }}
+            className='fixed h-screen w-screen bg-modalBackdrop top-0 left-0 z-50'
+          />
+          <motion.div
+            id='modal'
+            initial={{
+              scale: 0,
+            }}
+            animate={{
+              scale: 1,
+              transition: {
+                duration: 0.4,
+              },
+            }}
+            exit={{
+              scale: 0,
+              transition: {
+                duration: 0.5,
+                delay: 0.4,
+              },
+            }}
+            className='fixed top-0 bottom-0 right-0 left-0 w-90 md:w-3/4 xl:w-1/2 rounded-md m-auto h-fit bg-secondary shadow-hard z-50'
           >
-            {Array.isArray(message) ? (
-              <ol>
-                {message.map((error, index) => {
-                  return (
-                    <li
-                      key={index}
-                      className='before:content-["∗"] before:font-extrabold flex before:flex before:items-center before:text-center before:mr-2'
-                    >
-                      {error}
-                    </li>
-                  );
-                })}
-              </ol>
-            ) : (
-              <p>
-                {message || 'Der er sket en ubehagelig ukendt fejl! Prøv igen!'}
-              </p>
-            )}
-          </div>
-          <div className='flex'>
-            <button
-              type='button'
-              className={`${
-                !isCloseable && 'opacity-30 cursor-not-allowed'
-              } bg-transparent border hover:text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-xs px-3 py-1.5 text-center ${
-                isError
-                  ? 'border-red-700 hover:bg-red-800 text-red-800 focus:ring-red-300'
-                  : 'border-green-700 hover:bg-green-800 text-green-800 focus:ring-green-300'
-              }`}
-              data-dismiss-target='#alert-additional-content-2'
-              onClick={() => {
-                handleOnClose();
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{
+                scale: 1,
+                transition: {
+                  duration: 0.3,
+                  delay: 0.4,
+                },
               }}
-              aria-label='Close'
-              disabled={isCloseable === false}
+              exit={{
+                scale: 0,
+                transition: {
+                  duration: 0.5,
+                  delay: 0.2,
+                },
+              }}
+              id='modal-content'
             >
-              OK
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+              <header
+                className={`p-[10px] rounded-tr-md rounded-tl-md ${
+                  isError ? 'bg-red-400' : 'bg-green-400'
+                }`}
+              >
+                {/* p-3 needs because down in button theres a p-3 */}
+                <motion.div
+                  initial={{ x: 400, opacity: 0 }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                    transition: {
+                      duration: 0.5,
+                      delay: 0.5,
+                    },
+                  }}
+                  exit={{
+                    x: 400,
+                    opacity: 0,
+                    transition: {
+                      duration: 0.4,
+                    },
+                  }}
+                  id='wrap-icon-title'
+                  className='p-3 flex justify-center items-center space-x-4'
+                >
+                  {isError ? (
+                    <FaRegSadTear size={43} fill='white' />
+                  ) : (
+                    <FaRegSmileBeam size={43} fill='white' />
+                  )}
+                  {isError && (
+                    <h1
+                      className={`font-title text-xl ${
+                        isError ? 'text-white' : 'text-green-700'
+                      } self-center`}
+                    >
+                      Åh nej, der er opstået en fejl.
+                    </h1>
+                  )}
+                </motion.div>
+              </header>
+              <motion.div
+                initial={{ x: 400, opacity: 0 }}
+                animate={{
+                  x: 0,
+                  opacity: 1,
+                  transition: {
+                    duration: 0.5,
+                    delay: 0.5,
+                  },
+                }}
+                exit={{
+                  x: 400,
+                  opacity: 0,
+                  transition: {
+                    duration: 0.4,
+                  },
+                }}
+                className='p-[25px] font-title2 text-md text-gray-400 flex flex-col items-center justify-center'
+              >
+                <AiOutlineMessage
+                  className={`${isError ? 'fill-red-400' : 'fill-green-400'}`}
+                  size={30}
+                />
+                {children}
+              </motion.div>
+              <footer className={`self-end flex justify-center`}>
+                <button
+                  disabled={isCloseable === false}
+                  onClick={() => setShow(false)}
+                  className={`w-fit shadow-form mb-5 p-2 px-10 rounded-full font-text2 ring-2 ${
+                    isError
+                      ? 'ring-red-300 text-white bg-red-400'
+                      : 'ring-green-300 text-white bg-green-400'
+                  } flex space-x-4`}
+                >
+                  <GoThumbsup
+                    size={13}
+                    className={`fill-white top-0 bottom-0 my-auto`}
+                  />
+                  <span>OK</span>
+                </button>
+              </footer>
+            </motion.div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
-};
+});
 
 export default Alert;

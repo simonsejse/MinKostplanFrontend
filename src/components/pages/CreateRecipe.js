@@ -224,20 +224,18 @@ const CreateRecipe = () => {
       }
     );
   };
-
+  const alertRef = useRef();
   return (
     <>
       <div className='flex-1 bg-primary'>
-        <div className='relative'>
-          <Alert
-            show={state.alert.show}
-            isError={state.alert.isError}
-            title={state.alert.title}
-            message={state.alert.message}
-            isCloseable={state.alert.isCloseable}
-            handleOnClose={hideAlert}
-          />
-        </div>
+        <Alert
+          ref={alertRef}
+          isError={state.alert.isError}
+          isCloseable={state.alert.isCloseable}
+        >
+          {state.alert.message}
+        </Alert>
+
         <IngredientInstructionModal />
         <PickFoodModal />
         <div className='h-full flex items-center'>

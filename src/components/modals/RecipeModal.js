@@ -48,8 +48,9 @@ const RecipeModal = forwardRef(({ children }, ref) => {
               scale: 0,
               transition: { delay: 0.4 },
             }}
-            className='fixed w-95 lg:w-[900px] xl:w-[1100px] h-fit max-h-[900px] bg-secondary rounded-md shadow-form m-auto top-0 bottom-0 left-0 right-0 p-[50px] z-50 '
+            className='fixed w-90 lg:w-[900px] xl:w-[1100px] h-fit max-h-[900px] bg-secondary rounded-md shadow-form m-auto top-0 bottom-0 left-0 right-0 p-[50px] z-50'
           >
+            {/***/}
             <motion.div
               initial={{
                 x: 200,

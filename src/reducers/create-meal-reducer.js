@@ -20,9 +20,7 @@ export const actions = {
 };
 export const initialState = {
   alert: {
-    show: false,
     isError: false,
-    title: '',
     message: '',
     isCloseable: true,
   },

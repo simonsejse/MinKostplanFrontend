@@ -5,7 +5,7 @@ import picture from '../../images/pb.jpg';
 export const About = () => {
   return (
     <div className='flex-1 bg-primary'>
-      <div className='md:mx-auto h-full w-full md:w-[600px] lg:w-[800px] xl:w-[1000px] flex flex-col justify-center divide-y-8 divide-double divide-indigo-500'>
+      <div className='p-5 pt-12 md:p-0 mx-auto h-full w-full md:w-[600px] lg:w-[800px] xl:w-[1000px] flex flex-col justify-center divide-y-8 divide-double divide-indigo-500'>
         <div className='bg-secondary p-5 rounded-md shadow-form w-full flex flex-col lg:flex-row md:space-x-12 mb-8'>
           <img
             className='mx-auto m-12 lg:m-0 rounded-full object-contain w-48 md:w-72 md:h-72'
@@ -58,7 +58,7 @@ export const About = () => {
             </div>
           </div>
         </div>
-        <div className='pt-8 p-5 md:p-0 md:pt-8'>
+        <div className='pt-8 md:p-0 md:pt-8'>
           <div className='bg-secondary p-5 rounded-md shadow-form'>
             <h1 class='text-4xl font-extrabold uppercase text-black'>
               Om Min-Kostplan.dk

@@ -12,7 +12,7 @@ import { useAuth } from '../../contexts/auth.context';
  * Components
  */
 import DropDownSelect from '../DropDownSelect';
-import Alert from '../Alert';
+
 /* Reducers */
 import {
   reducer,
@@ -92,15 +92,7 @@ const CreateDietPlan = () => {
 
   return (
     <div className='flex-1'>
-      <div className='relative'>
-        <Alert
-          show={state.notifications.showNotification}
-          isError={true}
-          title={state.notifications.title}
-          message={state.notifications.message}
-          onClose={hideAlert}
-        />
-      </div>
+      <div className='relative'>alert system here</div>
       <div className='h-full flex justify-center items-center pt-10 pb-10 lg:p-10'>
         <div className='md:flex flex-col md:w-4/5'>
           <div className='flex justify-between items-end space-x-5 m-4 md:m-0'>

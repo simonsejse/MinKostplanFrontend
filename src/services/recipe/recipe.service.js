@@ -14,12 +14,20 @@ class RecipeService {
 
   async getRecipesAwaitingApproval(page) {
     return axios.get(
-      `${BASE_API_URL}/awaiting-approval?size=10&page=${page}&sort=id,asc`,
+      `${BASE_API_URL}/awaiting-approval?size=4&page=${page}&sort=id,asc`,
       axiosRequestConfig
     );
   }
+
   async getRecipeById(id) {
     return axios.get(`${BASE_API_URL}/${id}`, axiosRequestConfig);
+  }
+
+  async createNewRecipeVoteByUserAndRecipe(recipeId, isUpvote) {
+    return axios.get(
+      `${BASE_API_URL}/vote/${recipeId}?isUpvote=${isUpvote}`,
+      axiosRequestConfig
+    );
   }
 }
 

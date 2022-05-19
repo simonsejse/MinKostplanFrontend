@@ -102,6 +102,7 @@ const CreateRecipe = () => {
       .getAllFoodDTOs()
       .then((res) => {
         console.log('Successfully loaded all food items');
+        console.log(res.data);
         dispatch({ type: actions.UPDATE_FOOD, payload: res.data });
       })
       .catch((err) => {
@@ -143,19 +144,6 @@ const CreateRecipe = () => {
    * Lav et API request til RecipeType og så kan jeg tilføje til et "options" og vise til brugeren
    * og når jeg så sender request tilbage tjekker jeg allerede via @Valid om det er gyldigt
    */
-
-  const hideAlert = () => {
-    dispatch({
-      type: actions.CHANGE_ALERT_STATE,
-      payload: {
-        show: false,
-        isError: false,
-        title: '',
-        message: '',
-        isCloseable: false,
-      },
-    });
-  };
 
   const createRecipeDTO = () => {
     return {

@@ -3,12 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaRegSadTear, FaRegSmileBeam } from 'react-icons/fa';
 import { GoThumbsup } from 'react-icons/go';
 import { AiOutlineMessage } from 'react-icons/ai';
-const Alert = forwardRef(({ children, isCloseable, isError }, ref) => {
+
+const Alert = forwardRef(({ isCloseable }, ref) => {
   const [show, setShow] = useState(false);
+  const [alertChildren, setAlertChildren] = useState(undefined);
+  const [isError, setIsError] = useState(false);
 
   useImperativeHandle(ref, () => ({
     show: () => setShow(true),
     hide: () => setShow(false),
+    setIsError: (isError) => setIsError(isError),
+    setAlertChildren: (HTMLElements) => setAlertChildren(HTMLElements),
   }));
 
   return (
@@ -40,11 +45,12 @@ const Alert = forwardRef(({ children, isCloseable, isError }, ref) => {
             exit={{
               scale: 0,
               transition: {
-                duration: 0.5,
-                delay: 0.4,
+                duration: 0.3,
+                delay: 0.5,
               },
             }}
-            className='fixed top-0 bottom-0 right-0 left-0 w-90 md:w-3/4 xl:w-1/2 rounded-md m-auto h-fit bg-secondary shadow-hard z-50'
+            //w-90 md:w-3/4 xl:w-1/2*/
+            className='fixed top-0 bottom-0 right-0 left-0 w-fit max-w-90 rounded-md m-auto h-fit bg-secondary shadow-hard z-50'
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -58,8 +64,8 @@ const Alert = forwardRef(({ children, isCloseable, isError }, ref) => {
               exit={{
                 scale: 0,
                 transition: {
-                  duration: 0.5,
-                  delay: 0.2,
+                  duration: 0.3,
+                  delay: 0.4,
                 },
               }}
               id='modal-content'
@@ -123,13 +129,13 @@ const Alert = forwardRef(({ children, isCloseable, isError }, ref) => {
                     duration: 0.4,
                   },
                 }}
-                className='p-[25px] font-title2 text-md text-gray-400 flex flex-col items-center justify-center'
+                className='p-[50px] font-title2 text-md text-gray-400 flex flex-col items-center justify-center'
               >
                 <AiOutlineMessage
                   className={`${isError ? 'fill-red-400' : 'fill-green-400'}`}
                   size={30}
                 />
-                {children}
+                {alertChildren}
               </motion.div>
               <footer className={`self-end flex justify-center`}>
                 <button

@@ -14,10 +14,11 @@ module.exports = {
       height: {
         90: '90%',
         '85-per': '85%',
+        80: '80%',
       },
       width: {
-        90: '90%',
         95: '95%',
+        90: '90%',
       },
       fontFamily: {
         title: 'Roboto',

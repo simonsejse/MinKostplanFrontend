@@ -8,8 +8,14 @@ class RecipeService {
     return axios.get(`${BASE_API_URL}/categories`, axiosRequestConfig);
   }
 
+  async deleteRecipeById(id) {
+    return axios.delete(`${BASE_API_URL}/delete/${id}`, axiosRequestConfig);
+  }
   async newRecipe(recipe) {
     return axios.post(`${BASE_API_URL}/new`, recipe, axiosRequestConfig);
+  }
+  async confirmRecipeById(id) {
+    return axios.post(`${BASE_API_URL}/confirm/${id}`, axiosRequestConfig);
   }
 
   async getRecipesAwaitingApproval(page) {

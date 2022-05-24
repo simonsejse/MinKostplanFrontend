@@ -3,11 +3,11 @@ import { useState, useEffect, useRef, useCallback } from 'react';
  * Images
  */
 import { FcCheckmark, FcCancel } from 'react-icons/fc';
-import ingredients from '../../../images/managerecipes/ingredients.png';
-import instructions from '../../../images/managerecipes/instructions.png';
-import description from '../../../images/managerecipes/description.png';
-import about from '../../../images/managerecipes/about.png';
-import info from '../../../images/managerecipes/info.png';
+import ingredients from '../../images/managerecipes/ingredients.png';
+import instructions from '../../images/managerecipes/instructions.png';
+import description from '../../images/managerecipes/description.png';
+import about from '../../images/managerecipes/about.png';
+import info from '../../images/managerecipes/info.png';
 
 /**
  * Components
@@ -16,15 +16,21 @@ import Card from './RecipeCard';
 /**
  * Services
  */
-import recipeService from '../../../services/recipe/recipe.service';
+import recipeService from '../../services/recipe/recipe.service';
 
-import Alert from '../../Alert';
-import RecipeModal from '../../modals/RecipeModal';
+import Alert from '../reusable-components/Alert';
+import RecipeModal from '../modals/RecipeModal';
 
 const ManageRecipes = () => {
   const [recipe, setRecipe] = useState(null);
-  const [page, setPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState([]);
+
+  const showAlert = (children, isError) => {
+    alertRef.current.setAlertChildren(children);
+    alertRef.current.setIsError(isError);
+    alertRef.current.show();
+  };
 
   const fetchRecipeById = async (id) => {
     const recipe = await recipeService.getRecipeById(id);
@@ -34,21 +40,21 @@ const ManageRecipes = () => {
 
   const updateRecipes = useCallback(() => {
     console.log('updating recipes..');
-    recipeService.getRecipesAwaitingApproval(page).then((res) => {
+    recipeService.getRecipesAwaitingApproval(currentPage).then((res) => {
       setData(res.data);
     });
-  }, [page]);
+  }, [currentPage]);
 
   useEffect(() => {
     updateRecipes();
-  }, [page, updateRecipes]);
+  }, [currentPage, updateRecipes]);
 
   const modalRef = useRef();
   const alertRef = useRef();
 
   return (
     <>
-      <div className='flex-1 bg-primary z-10'>
+      <div className='flex-1 bg-primary'>
         <div className='h-full flex flex-col'>
           <Alert ref={alertRef} isCloseable={true} />
 
@@ -285,6 +291,7 @@ const ManageRecipes = () => {
               </div>
             </main>
           </RecipeModal>
+
           <header className='p-5 bg-gradient-to-r from-accent via-indigo-600/[.9] to-button/[.8]'>
             <h1 className='justify-self-start text-white text-center font-title text-3xl'>
               Opskrifter afventer godkendelse
@@ -294,10 +301,10 @@ const ManageRecipes = () => {
               forbrugere!
             </p>
           </header>
-          <div className='h-full flex flex-col justify-center items-center'>
+          <div className='flex flex-col'>
             <div
               id='grid-wrap'
-              className='h-full place-items-center grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
+              className='p-[25px] h-fit grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
             >
               {data.content &&
                 data.content.length > 0 &&
@@ -313,52 +320,103 @@ const ManageRecipes = () => {
                   );
                 })}
             </div>
-            <footer className='mt-auto mb-6 w-full'>
-              <div className='flex justify-center space-x-4'>
-                <button
-                  id='page-number-wrap'
-                  className={`hover:bg-sky-600 hover:cursor-pointer hover:text-white font-poppins p-5 border-2 border-sky-600 text-center shadow-form rounded-lg`}
-                  onClick={() => {
-                    if (page - 1 > data.totalPages || page - 1 < 0) {
-                      alertRef.current.setAlertChildren(
-                        <p>Du kan ikke gå til en side der er mindre end nul.</p>
-                      );
-                      alertRef.current.show();
-                      return;
-                    }
-                    setPage(page - 1);
-                  }}
-                >
-                  Forrige side
-                </button>
-                <span className='font-poppins text-2xl text-sky-600 flex items-center'>
-                  {page}
-                </span>
-                <button
-                  id='page-number-wrap'
-                  className={`hover:bg-sky-600 hover:cursor-pointer hover:text-white font-poppins p-5 border-2 border-sky-600 text-center shadow-form rounded-lg`}
-                  onClick={() => {
-                    console.log('am i working');
+            <nav
+              class='mx-auto relative z-0 inline-flex rounded-md shadow-sm -space-x-px'
+              aria-label='Pagination'
+            >
+              <a
+                href='#'
+                class='relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'
+              >
+                <span class='sr-only'>Forrige</span>
 
-                    if (page + 1 >= data.totalPages) {
-                      alertRef.current.setAlertChildren(
-                        <p>
-                          Du kan ikke gå til en side der er større end den
-                          <br />
-                          totale antal side.
-                        </p>
-                      );
-                      alertRef.current.setIsError(true);
-                      alertRef.current.show();
-                      return;
-                    }
-                    setPage(page + 1);
-                  }}
+                <svg
+                  class='h-5 w-5'
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 0 20 20'
+                  fill='currentColor'
+                  aria-hidden='true'
                 >
-                  Næste side
-                </button>
-              </div>
-            </footer>
+                  <path
+                    fill-rule='evenodd'
+                    d='M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z'
+                    clip-rule='evenodd'
+                  />
+                </svg>
+              </a>
+              {data.totalPages < 6 && (
+                <>
+                  {' '}
+                  <a
+                    href='#'
+                    aria-current='page'
+                    class='z-10 bg-indigo-50 border-indigo-500 text-indigo-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium'
+                  >
+                    {' '}
+                    1{' '}
+                  </a>
+                  <a
+                    href='#'
+                    class='bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium'
+                  >
+                    {' '}
+                    2{' '}
+                  </a>
+                </>
+              )}
+
+              <a
+                href='#'
+                class='relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50'
+              >
+                <span class='sr-only'>Næste</span>
+
+                <svg
+                  class='h-5 w-5'
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 0 20 20'
+                  fill='currentColor'
+                  aria-hidden='true'
+                >
+                  <path
+                    fill-rule='evenodd'
+                    d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'
+                    clip-rule='evenodd'
+                  />
+                </svg>
+              </a>
+            </nav>
+
+            {/*<div className='mx-auto flex text-center text-black font-poppins space-x-3'>
+              <button
+                onClick={() => {
+                  if (page - 1 < 0) {
+                    return showAlert(
+                      <p>Du kan ikke gå til forrige side.</p>,
+                      true
+                    );
+                  }
+                  setPage((page) => page - 1);
+                }}
+                className='border-sky-500 border-2 p-2 w-[130px] rounded-lg hover:bg-sky-400 hover:border-sky-600 hover:text-white'
+              >
+                Forrige side
+              </button>
+              <button
+                onClick={() => {
+                  if (page + 2 > data.totalPages) {
+                    return showAlert(
+                      <p>Du kan ikke gå til næste side.</p>,
+                      true
+                    );
+                  }
+                  setPage((page) => page + 1);
+                }}
+                className='border-sky-500 border-2 p-2 w-[130px] rounded-lg hover:bg-sky-400 hover:border-sky-600 hover:text-white'
+              >
+                Næste side
+              </button>
+              </div>*/}
           </div>
         </div>
       </div>

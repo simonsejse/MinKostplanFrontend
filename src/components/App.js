@@ -10,12 +10,12 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Sidebar from './Sidebar';
-import ProtectedRoute from './ProtectedRoute';
+import ProtectedRoute from './reusable-components/ProtectedRoute';
 import Error from './Error404';
 import About from './pages/About';
 import CreateRecipe from './pages/CreateRecipe';
 import Support from './pages/Support';
-import ManageRecipes from './pages/manage-recipes/ManageRecipes';
+import ManageRecipes from './pages/ManageRecipes';
 import { DragDropContext } from 'react-beautiful-dnd';
 /**
  * Custom React Providers

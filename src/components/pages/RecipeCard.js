@@ -12,7 +12,7 @@ import {
 /**
  * Services
  */
-import recipeService from '../../../services/recipe/recipe.service';
+import recipeService from '../../services/recipe/recipe.service';
 
 const Card = ({
   recipe,
@@ -24,7 +24,8 @@ const Card = ({
   return (
     <div
       id='item-wrap'
-      className='bg-secondary rounded-lg p-[50px] shadow-form h-[700px] w-[347px] relative'
+      //h-[700px]
+      className='bg-secondary rounded-lg p-[50px] shadow-form w-[347px] relative'
     >
       <div className='absolute top-0 right-0 pr-5 pt-5'>
         <p className='text-gray-500 font-semibold font-poppins text-sm lg:text-md'>
@@ -78,7 +79,32 @@ const Card = ({
               id='icon'
               className='transition duration-300 ease-out hover:-translate-y-1 hover:bg-gray-400 p-4 bg-primary shadow-form w-fit h-fit rounded-full'
             >
-              <BsCheckLg fill='green' size={15} />
+              <BsCheckLg
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      'Er du sikker på at denne opskrift skal accepteres?!'
+                    )
+                  ) {
+                    recipeService.confirmRecipeById(recipe.id).then(
+                      (res) => {
+                        alertRef.current.setAlertChildren(<p>{res.data}</p>);
+                        alertRef.current.show();
+                        updateRecipes();
+                      },
+                      (err) => {
+                        alertRef.current.setAlertChildren(
+                          <p>Du har vidst ikke helt tilladdelse til dette!</p>
+                        );
+                        alertRef.current.setIsError(true);
+                        alertRef.current.show();
+                      }
+                    );
+                  }
+                }}
+                fill='green'
+                size={15}
+              />
             </div>
             <div
               id='icon'
@@ -138,7 +164,32 @@ const Card = ({
               id='icon'
               className='transition duration-300 ease-out hover:-translate-y-1 hover:bg-gray-400 p-4 bg-primary shadow-form w-fit h-fit rounded-full'
             >
-              <BsXLg fill='red' size={15} />
+              <BsXLg
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      'Er du sikker på at du vil slette opskriften, dette kan ikke fortrydes!?'
+                    )
+                  ) {
+                    recipeService.deleteRecipeById(recipe.id).then(
+                      (res) => {
+                        alertRef.current.setAlertChildren(<p>{res.data}</p>);
+                        alertRef.current.show();
+                        updateRecipes();
+                      },
+                      (err) => {
+                        alertRef.current.setAlertChildren(
+                          <p>Du har vidst ikke helt tilladdelse til dette!</p>
+                        );
+                        alertRef.current.setIsError(true);
+                        alertRef.current.show();
+                      }
+                    );
+                  }
+                }}
+                fill='red'
+                size={15}
+              />
             </div>
           </div>
         </footer>

@@ -1,0 +1,9 @@
+button > svg {
+  transition: all ease-in-out;
+  transition-duration: 300ms;
+  transform: rotate(90deg);
+}
+
+button:hover > svg {
+  transform: rotate(0deg);
+}

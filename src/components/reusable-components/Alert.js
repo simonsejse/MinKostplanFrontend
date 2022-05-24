@@ -28,6 +28,7 @@ const Alert = forwardRef(({ isCloseable }, ref) => {
             onClick={() => {
               if (!isCloseable) return;
               setShow(false);
+              setIsError(false);
             }}
             className='fixed h-screen w-screen bg-modalBackdrop top-0 left-0 z-50'
           />
@@ -140,7 +141,10 @@ const Alert = forwardRef(({ isCloseable }, ref) => {
               <footer className={`self-end flex justify-center`}>
                 <button
                   disabled={isCloseable === false}
-                  onClick={() => setShow(false)}
+                  onClick={() => {
+                    setShow(false);
+                    setIsError(false);
+                  }}
                   className={`w-fit shadow-form mb-5 p-2 px-10 rounded-full font-text2 ring-2 ${
                     isError
                       ? 'ring-red-300 text-white bg-red-400'

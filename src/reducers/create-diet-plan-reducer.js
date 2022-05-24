@@ -6,12 +6,7 @@ export const actions = {
 };
 
 export const initialState = {
-  showAlert: false,
-  alertMessage: '',
-  mealDistributionFieldsErrorHandling: {
-    isError: false,
-    errorMessage: '',
-  },
+  section: 1,
   form: {
     dropdownValue: 'Vedligeholdelse',
     proteinMacro: 0,
@@ -30,17 +25,6 @@ export const initialState = {
 
 export const reducer = (state, action) => {
   switch (action.type) {
-    case actions.SHOW_ALERT:
-      return {
-        ...state,
-        showAlert: true,
-        alertMessage: action.payload,
-      };
-    case actions.HIDE_ALERT:
-      return {
-        ...state,
-        showAlert: false,
-      };
     case actions.CHANGE_FORM_VALUES:
       return {
         ...state,

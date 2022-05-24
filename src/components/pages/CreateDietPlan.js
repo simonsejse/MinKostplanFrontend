@@ -1,7 +1,7 @@
 /**
  * React stuff
  */
-import React, { useReducer } from 'react';
+import React, { useReducer, useRef } from 'react';
 
 /**
  * Contexts
@@ -19,19 +19,28 @@ import {
   initialState,
   actions,
 } from '../../reducers/create-diet-plan-reducer';
-import { GiConsoleController } from 'react-icons/gi';
+/**
+ *
+ * Stylesheets
+ */
+import '../css/CreateRecipe.css';
+/**
+ * icons
+ */
+import { AiFillCheckCircle } from 'react-icons/ai';
+import Alert from '../reusable-components/Alert';
 
 const CreateDietPlan = () => {
   const { user } = useAuth();
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const hideAlert = () => {
-    dispatch({ type: actions.HIDE_ALERT });
-  };
+  const alertRef = useRef();
 
-  const showAlert = (message) => {
-    dispatch({ type: actions.SHOW_ALERT, payload: message });
+  const showAlert = (children, isError) => {
+    alertRef.current.setAlertChildren(children);
+    alertRef.current.setIsError(isError);
+    alertRef.current.show();
   };
 
   const changeValue = (name, value) => {
@@ -63,15 +72,12 @@ const CreateDietPlan = () => {
         <label
           className='block uppercase tracking-wide text-gray-200 text-xs font-bold'
           htmlFor='a-meal'
+          onClick={() => alertRef.current.show()}
         >
           Måltid {i + 1}
         </label>
         <input
-          className={`w-full appearance-none block text-gray-700 ${
-            state.mealDistributionFieldsErrorHandling.isError
-              ? 'border-2 border-red-500 focus:border-red-500 bg-red-200'
-              : 'border border-gray-200 focus:border-gray-500 focus:bg-white bg-gray-200'
-          } rounded py-3 px-4 leading-tight focus:outline-none`}
+          className={`w-full appearance-none block text-gray-700 rounded py-3 px-4 leading-tight focus:outline-none`}
           id={`a-meal-${i}`}
           name='a-meal'
           value={state.form.mealDistribution[`meal_${i + 1}`]}
@@ -81,24 +87,113 @@ const CreateDietPlan = () => {
           type='number'
           placeholder='Måltid-fordeling i %'
         ></input>
-        {state.mealDistributionFieldsErrorHandling.isError && (
-          <div className='text-red-500 text-xs italic'>
-            {state.mealDistributionFieldsErrorHandling.errorMessage}
-          </div>
-        )}
       </div>
     );
   }
 
   return (
-    <div className='flex-1'>
-      <div className='relative'>alert system here</div>
-      <div className='h-full flex justify-center items-center pt-10 pb-10 lg:p-10'>
-        <div className='md:flex flex-col md:w-4/5'>
+    <div className='flex-1 bg-primary'>
+      <Alert isCloseable={true} ref={alertRef} />
+      <div className='h-full flex flex-col justify-center space-y-4'>
+        <section
+          id='section-wrapper'
+          className='flex w-[800px] divide-x divide-gray-300 rounded-lg mx-auto border border-gray-300'
+        >
+          <div className='w-full p-5 flex items-center space-x-2'>
+            {state.section <= 1 ? (
+              <div className='rounded-full border-2 border-purple-600 text-purple-600 flex items-center justify-center h-[40px] w-[40px]'>
+                01
+              </div>
+            ) : (
+              <AiFillCheckCircle className='fill-purple-600' size={40} />
+            )}
+            <h1
+              className={`font-poppins ${
+                state.section <= 1 ? 'text-purple-600' : 'text-black'
+              }`}
+            >
+              Information
+            </h1>
+          </div>
+          <div className='w-full p-5 flex items-center space-x-2'>
+            {state.section > 2 ? (
+              <AiFillCheckCircle className='fill-purple-600' size={40} />
+            ) : (
+              <div
+                className={`rounded-full border-2 ${
+                  state.section < 2
+                    ? 'border-gray-600 text-gray-600'
+                    : 'border-purple-600 text-purple-600'
+                } flex items-center justify-center h-[40px] w-[40px]`}
+              >
+                02
+              </div>
+            )}
+            <h1
+              className={`font-poppins ${
+                state.section > 2
+                  ? 'text-black'
+                  : state.section < 2
+                  ? 'text-gray-600'
+                  : 'text-purple-600'
+              }`}
+            >
+              Vælg måltider
+            </h1>
+          </div>
+          <div className='w-full p-5 flex items-center space-x-2'>
+            {state.section > 3 ? (
+              <AiFillCheckCircle className='fill-purple-600' size={40} />
+            ) : (
+              <div
+                className={`rounded-full border-2 ${
+                  state.section < 3
+                    ? 'border-gray-600 text-gray-600'
+                    : 'border-purple-600 text-purple-600'
+                } flex items-center justify-center h-[40px] w-[40px]`}
+              >
+                02
+              </div>
+            )}
+            <h1
+              className={`font-poppins ${
+                state.section > 3
+                  ? 'text-black'
+                  : state.section < 3
+                  ? 'text-gray-600'
+                  : 'text-purple-600'
+              }`}
+            >
+              Forhåndsvisning
+            </h1>
+          </div>
+        </section>
+        <div className='mx-auto bg-secondary rounded-md shadow-form w-90 h-80'>
+          <div id='div-content' className='p-[50px]'>
+            <button className='flex bg-accent p-2 text-center text-white rounded-md pr-4'>
+              <svg
+                className='w-6 h-6 text-gray-400'
+                fill='white'
+                viewBox='0 0 20 20'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path
+                  fill-rule='evenodd'
+                  d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z'
+                  clip-rule='evenodd'
+                ></path>
+              </svg>
+              {state.section <= 2 ? 'Næste' : 'Færdiggør'}
+            </button>
+          </div>
+        </div>
+      </div>
+      {/*<div className='h-full flex justify-center items-center pt-10 pb-10 lg:p-10'>
+        <div className='bg-secondary shadow-form p-4 md:flex flex-col md:w-4/5'>
           <div className='flex justify-between items-end space-x-5 m-4 md:m-0'>
             <div className='mt-[5rem] md:mt-0 md:w-64'>
               <label
-                className='text-sm leading-none text-gray-300'
+                className='text-sm font-title leading-none text-black'
                 id='diet-plan-name'
               >
                 Kostplan navn
@@ -385,7 +480,7 @@ const CreateDietPlan = () => {
             <div></div>
           </div>
         </div>
-      </div>
+                        </div>*/}
     </div>
   );
 };

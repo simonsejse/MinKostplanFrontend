@@ -41,8 +41,8 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`h-screen w-full fixed ${
-        navState.navOpen && 'z-50'
+      className={`w-full fixed ${
+        navState.navOpen && 'h-screen z-50'
       } sm:relative sm:z-50 ${
         navState.full ? 'sm:w-64' : 'sm:w-20'
       } flex justify-between`}

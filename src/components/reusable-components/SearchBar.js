@@ -4,7 +4,7 @@ import { AiFillCloseCircle } from 'react-icons/ai';
 /**
  * Stylesheets
  */
-import './css/SearchBar.css';
+import '.././css/SearchBar.css';
 
 export const SearchBar = ({ placeholder, data, handleOnAdd }) => {
   const [filteredData, setFilteredData] = React.useState([]);

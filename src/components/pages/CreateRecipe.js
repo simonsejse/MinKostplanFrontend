@@ -16,9 +16,9 @@ import { useAuth } from '../../contexts/auth.context';
 /**
  * Components
  */
-import Alert from '../Alert';
+import Alert from '../reusable-components/Alert';
 import DropDownSelect from '../DropDownSelect';
-import SearchBar from '../SearchBar';
+import SearchBar from '../reusable-components/SearchBar';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 /**

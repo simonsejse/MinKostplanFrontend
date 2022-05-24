@@ -12,7 +12,7 @@ import {
 /**
  *
  */
-import { useAuth } from '../contexts/auth.context';
+import { useAuth } from '../../contexts/auth.context';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();

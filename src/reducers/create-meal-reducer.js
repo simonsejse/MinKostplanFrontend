@@ -1,5 +1,4 @@
 export const actions = {
-  CHANGE_ALERT_STATE: 1,
   CHANGE_FORM_DATA: 2,
   CHANGE_FORM_BOOLEAN_DATA: 3,
   CHANGE_FOOD_MODAL_FORM: 4,
@@ -9,21 +8,15 @@ export const actions = {
   SHOW_INGREDIENTS_FOOD_MODAL: 8,
   NEW_INSTRUCTION: 9,
   NEW_INGREDIENT: 10,
-  NEW_META: 11,
+
   DELETE_INSTRUCTION_BY_INSTRUCTION: 12,
   DELETE_INGREDIENT_BY_ID: 13,
   UPDATE_FOOD: 14,
   SHOW_PICK_FOOD_MODAL: 15,
   SET_MEASUREMENTS: 16,
   RESET_INGREDIENT_FORM: 17,
-  RESET_META_FORM: 18,
 };
 export const initialState = {
-  alert: {
-    isError: false,
-    message: '',
-    isCloseable: true,
-  },
   showFoodAndInstructionModal: false,
   foodModal: {
     show: false,
@@ -31,8 +24,6 @@ export const initialState = {
     form: {
       grams: '',
       amountOwnUnit: '',
-      metaList: [],
-      meta: '',
       unit: 'GRAMS',
     },
   },
@@ -44,7 +35,7 @@ export const initialState = {
   form: {
     name: '',
     description: '',
-    type: '',
+    type: 'MORGENMAD',
     picture: null,
     booleans: {
       isVegetarian: false,
@@ -64,14 +55,6 @@ export const initialState = {
 
 export const reducer = (state, action) => {
   switch (action.type) {
-    case actions.CHANGE_ALERT_STATE:
-      const alert = action.payload;
-      return {
-        ...state,
-        alert: {
-          ...alert,
-        },
-      };
     case actions.CHANGE_FORM_DATA:
       return {
         ...state,
@@ -138,18 +121,7 @@ export const reducer = (state, action) => {
           instructions: instructions,
         },
       };
-    case actions.NEW_META:
-      const meta = action.payload;
-      return {
-        ...state,
-        foodModal: {
-          ...state.foodModal,
-          form: {
-            ...state.foodModal.form,
-            metaList: [...state.foodModal.form.metaList, meta],
-          },
-        },
-      };
+
     case actions.DELETE_INGREDIENT_BY_ID:
       return {
         ...state,
@@ -169,6 +141,7 @@ export const reducer = (state, action) => {
           ],
         },
       };
+    //TODO fix this to ingredient by id
     case actions.DELETE_INSTRUCTION_BY_INSTRUCTION: {
       const instructions = state.form.instructions.filter(
         (instruction) => instruction.instruction !== action.payload
@@ -194,22 +167,7 @@ export const reducer = (state, action) => {
         },
       };
     }
-    case actions.DELETE_META_BY_ID: {
-      return {
-        ...state,
-        foodModal: {
-          ...state.foodModal,
-          form: {
-            ...state.foodModal.form,
-            metaList: [
-              ...state.foodModal.form.metaList.filter(
-                (meta) => meta.id !== action.payload
-              ),
-            ],
-          },
-        },
-      };
-    }
+
     case actions.UPDATE_FOOD: {
       const foods = action.payload;
       return {
@@ -254,21 +212,8 @@ export const reducer = (state, action) => {
           form: {
             grams: '',
             amountOwnUnit: '',
-            metaList: [],
-            meta: '',
+
             unit: 'GRAMS',
-          },
-        },
-      };
-    }
-    case actions.RESET_META_FORM: {
-      return {
-        ...state,
-        foodModal: {
-          ...state.foodModal,
-          form: {
-            ...state.foodModal.form,
-            meta: '',
           },
         },
       };
@@ -285,6 +230,6 @@ export const reducer = (state, action) => {
       };
     }
     default:
-      throw new Error('');
+      throw new Error('Burde ikke ende her?:' + action.type);
   }
 };

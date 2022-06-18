@@ -7,6 +7,10 @@ class UserService {
   getUser() {
     return axios.get(`${API_BASE_URL}/`, axiosRequestConfig);
   }
+
+  getUserInfoForSidebar() {
+    return axios.get(`${API_BASE_URL}/info-for-sidebar`, axiosRequestConfig);
+  }
 }
 
 export default new UserService();

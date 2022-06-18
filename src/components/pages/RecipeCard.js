@@ -13,14 +13,10 @@ import {
  * Services
  */
 import recipeService from '../../services/recipe/recipe.service';
+import { useAlert } from '../reusable-components/Alert';
 
-const Card = ({
-  recipe,
-  modalRef,
-  alertRef,
-  fetchRecipeById,
-  updateRecipes,
-}) => {
+const Card = ({ recipe, modalRef, fetchRecipeById, updateRecipes }) => {
+  const { showSuccess, showError } = useAlert();
   return (
     <div
       id='item-wrap'
@@ -66,8 +62,8 @@ const Card = ({
         </section>
         <p
           onClick={() => {
-            modalRef.current.open();
             fetchRecipeById(recipe.id);
+            modalRef.current.open();
           }}
           className='cursor-pointer mt-auto pb-2 pt-2 font-poppins text-accent font-medium underline'
         >
@@ -88,16 +84,14 @@ const Card = ({
                   ) {
                     recipeService.confirmRecipeById(recipe.id).then(
                       (res) => {
-                        alertRef.current.setAlertChildren(<p>{res.data}</p>);
-                        alertRef.current.show();
+                        showSuccess({ message: res.data });
                         updateRecipes();
                       },
                       (err) => {
-                        alertRef.current.setAlertChildren(
-                          <p>Du har vidst ikke helt tilladdelse til dette!</p>
-                        );
-                        alertRef.current.setIsError(true);
-                        alertRef.current.show();
+                        showError({
+                          message:
+                            'Du har vidst ikke helt tilladdelse til dette!',
+                        });
                       }
                     );
                   }
@@ -119,17 +113,9 @@ const Card = ({
                     .then(() => {
                       updateRecipes();
                     });
-                  alertRef.current.setAlertChildren(
-                    <p>
-                      Du har opstemt opskriften{' '}
-                      <span className='text-green-500 font-bold'>
-                        {recipe.name}
-                      </span>
-                      <br />
-                      Tak for din støtte!
-                    </p>
-                  );
-                  alertRef.current.show();
+                  showSuccess({
+                    message: `Du har opstemt opskriften ${recipe.name}. Tak for din støtte!`,
+                  });
                 }}
               />
             </div>
@@ -146,17 +132,9 @@ const Card = ({
                     .then(() => {
                       updateRecipes();
                     });
-                  alertRef.current.setAlertChildren(
-                    <p>
-                      Du har nedstemt opskriften{' '}
-                      <span className='text-red-500 font-bold'>
-                        {recipe.name}
-                      </span>
-                      <br />
-                      Tak for din støtte!
-                    </p>
-                  );
-                  alertRef.current.show();
+                  showSuccess({
+                    message: `Du har nedstemt opskriften ${recipe.name}! Tak for din støtte!`,
+                  });
                 }}
               />
             </div>
@@ -173,16 +151,13 @@ const Card = ({
                   ) {
                     recipeService.deleteRecipeById(recipe.id).then(
                       (res) => {
-                        alertRef.current.setAlertChildren(<p>{res.data}</p>);
-                        alertRef.current.show();
+                        showSuccess({ message: `${res.data}` });
                         updateRecipes();
                       },
                       (err) => {
-                        alertRef.current.setAlertChildren(
-                          <p>Du har vidst ikke helt tilladdelse til dette!</p>
-                        );
-                        alertRef.current.setIsError(true);
-                        alertRef.current.show();
+                        showError({
+                          message: `Du har vidst ikke helt tilladdelse til dette!`,
+                        });
                       }
                     );
                   }

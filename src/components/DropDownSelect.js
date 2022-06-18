@@ -9,9 +9,12 @@ function classNames(...classes) {
 
 const DropDownSelect = ({ value, setValue }) => {
   return (
-    <Menu as='div' className='mt-4 relative inline-block text-left'>
+    <Menu
+      as='div'
+      className='shadow-lg rounded-md relative inline-block text-left z-50'
+    >
       <div>
-        <Menu.Button className='inline-flex justify-center max-w-40 rounded-md shadow-sm px-4 py-[12px] bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500'>
+        <Menu.Button className='inline-flex justify-center max-w-40 rounded-md px-4 py-[12px] bg-gray-200 border border-gray-300 focus:border-gray-600 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500'>
           {value}
           <ChevronDownIcon className='-mr-1 ml-2 h-5 w-5' aria-hidden='true' />
         </Menu.Button>
@@ -33,7 +36,7 @@ const DropDownSelect = ({ value, setValue }) => {
                 <p
                   onClick={() => setValue('Vægttab')}
                   className={classNames(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    active ? 'bg-gray-200 text-gray-900' : 'text-gray-700',
                     'block px-4 py-2 text-sm'
                   )}
                 >
@@ -48,7 +51,7 @@ const DropDownSelect = ({ value, setValue }) => {
                 <p
                   onClick={() => setValue('Vedligeholdelse')}
                   className={classNames(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    active ? 'bg-gray-200 text-gray-900' : 'text-gray-700',
                     'block px-4 py-2 text-sm'
                   )}
                 >
@@ -63,7 +66,7 @@ const DropDownSelect = ({ value, setValue }) => {
                 <p
                   onClick={() => setValue('Muskelopbygning')}
                   className={classNames(
-                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    active ? 'bg-gray-200 text-gray-900' : 'text-gray-700',
                     'block px-4 py-2 text-sm'
                   )}
                 >

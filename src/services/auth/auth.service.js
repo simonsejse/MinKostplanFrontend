@@ -20,16 +20,16 @@ class AuthService {
     );
   }
 
+  resetCredentials(email) {
+    return axios.get(`${API_BASE_URL}/reset/credentials?email=${email}`);
+  }
+
   logOut() {
     return axios.get(`${API_BASE_URL}/logout`, axiosRequestConfig);
   }
 
-  register(username, email, password) {
-    return axios.post(`${API_BASE_URL}/signup`, {
-      username: username,
-      email: email,
-      password: password,
-    });
+  register(registerRequest) {
+    return axios.post(`${API_BASE_URL}/signup`, registerRequest);
   }
 }
 

@@ -16,8 +16,9 @@ import { useAuth } from '../../contexts/auth.context';
 /**
  * Components
  */
-import Alert from '../reusable-components/Alert';
+import Alert, { useAlert } from '../reusable-components/Alert';
 import DropDownSelect from '../DropDownSelect';
+import Tags from '../reusable-components/Tags';
 import SearchBar from '../reusable-components/SearchBar';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -72,7 +73,8 @@ const RecipeWrapper = () => {
 
 const CreateRecipe = () => {
   const { user } = useAuth();
-
+  const { showSuccess, showError } = useAlert();
+  const tagsRef = useRef();
   const { state, dispatch } = useRecipeReducer();
 
   useEffect(() => {
@@ -87,36 +89,23 @@ const CreateRecipe = () => {
       })
       .catch((err) => {
         console.log('Error has occured trying to get categories.');
-        dispatch({
-          type: actions.CHANGE_ALERT_STATE,
-          payload: {
-            show: true,
-            isError: true,
-            isCloseable: false,
-            title: 'Kunne ikke loade kategorier!',
-            message: 'Kunne ikke loade opskrift kategorierne! Reload siden!',
-          },
+        showError({
+          message: 'Kunne ikke loade opskrift kategorierne! Reload siden!',
+          closeable: false,
         });
       });
     foodService
       .getAllFoodDTOs()
       .then((res) => {
         console.log('Successfully loaded all food items');
-        console.log(res.data);
         dispatch({ type: actions.UPDATE_FOOD, payload: res.data });
       })
       .catch((err) => {
         console.log("Couldn't load ingredients!");
-        dispatch({
-          type: actions.CHANGE_ALERT_STATE,
-          payload: {
-            show: true,
-            isError: true,
-            isCloseable: false,
-            title: 'Kunne ikke loade mad-ingredienser!',
-            message:
-              'Kunne ikke loade mad ingredienserne! Reload siden og sørg for at du er logget ind!',
-          },
+        showError({
+          message:
+            'Kunne ikke loade mad ingredienserne! Reload siden og sørg for at du er logget ind!',
+          closeable: false,
         });
       });
     measurementService
@@ -127,16 +116,10 @@ const CreateRecipe = () => {
       })
       .catch((err) => {
         console.log(err);
-        dispatch({
-          type: actions.CHANGE_ALERT_STATE,
-          payload: {
-            show: true,
-            isError: true,
-            isCloseable: false,
-            title: 'Kunne ikke loade målinger!',
-            message:
-              'Kunne ikke loade mad målinger! Reload siden og sørg for at du er logget ind!',
-          },
+        showError({
+          message:
+            'Kunne ikke loade mad målinger! Reload siden og sørg for at du er logget ind!',
+          closeable: false,
         });
       });
   }, []);
@@ -165,6 +148,7 @@ const CreateRecipe = () => {
         ${state.form.instructions.map((instruction) => {
           return `<li>${instruction.instruction}</li>`;
         })}</ul>`,
+      meta: tagsRef.current.getTags().map((meta) => meta.name),
       ingredients: [
         ...state.form.ingredients.map((ingredient) => {
           return {
@@ -175,7 +159,6 @@ const CreateRecipe = () => {
               amountOfType: ingredient.amountOwnUnit,
               amountInGrams: ingredient.grams,
             },
-            meta: ingredient.metaList.map((meta) => meta.name),
           };
         }),
       ],
@@ -195,35 +178,22 @@ const CreateRecipe = () => {
     recipeService.newRecipe(recipe).then(
       (res) => {
         console.log(recipe);
+        showSuccess({ message: 'Din opskrift er nu oprettet!' });
         console.log('success');
       },
       (error) => {
         console.log(error.response);
-        dispatch({
-          type: actions.CHANGE_ALERT_STATE,
-          payload: {
-            show: true,
-            isError: true,
-            isCloseable: true,
-            title: 'Kunne ikke uploade ny opskrift!',
-            message: error.response.data?.errors || error.response.data?.error,
-          },
+        showError({
+          message: 'Kunne ikke uploade ny opskrift!',
+          errors: error?.response?.data?.errors,
         });
       }
     );
   };
-  const alertRef = useRef();
+
   return (
     <>
       <div className='flex-1 bg-primary'>
-        <Alert
-          ref={alertRef}
-          isError={state.alert.isError}
-          isCloseable={state.alert.isCloseable}
-        >
-          {state.alert.message}
-        </Alert>
-
         <IngredientInstructionModal />
         <PickFoodModal />
         <div className='h-full flex items-center'>
@@ -453,76 +423,31 @@ const CreateRecipe = () => {
               </div>
             </div>
           </div>
-          <div className='min-h-[72%] mr-4 w-1/5'>
-            <h1 className='self-start text-lg font-title uppercase font-bold'>
-              FAQ
-            </h1>
-            <h1 className='self-start text-md font-title uppercase font-bold'>
-              Hvorfor uploade en opskrift?
-            </h1>
-            <p className='text-xs font-text text-gray-500 text-justify'>
-              Hos Min Kostplan går vi meget op i, at have en varieret række
-              skræddersyet opskrifter lavet af vores team samt forbrugere. Dette
-              kræver også en indsats fra vores brugere, og derfor har vi valgt,
-              at for hver opskrift der uploades optjenes der 5 point, hvor at
-              man til sidst efter 50 optjente point, kan få gratis medlemsskab.
-              Som tak for ens bidrag.
-            </p>
-            <div className='w-[350px] min-h-[46px] max-h-[450px] overflow-y-auto mt-5 flex bg-secondary shadow-form p-2 rounded-lg'>
-              <ul className='w-full flex-wrap flex -m-[10px] flex-row pl-0'>
-                <h1 className='w-full m-[10px] font-extrabold font-title text-xl'>
-                  Opskrift tags
-                  <i className='flex font-title text-sm'>
-                    Gør retten nemmere at finde ved hjælp af søge tags!
-                  </i>
-                </h1>
-
-                {/*state.foodModal.form.metaList.map((meta) => {
-                  return (
-                    <li
-                      key={meta.id}
-                      className='m-[10px] relative flex items-center w-auto text-white mr-2 p-2 pr-8 bg-blue-500 hover:bg-blue-400 rounded-md'
-                    >
-                      <span className='font-title'>{meta.name}</span>
-                      <BsX
-                        size={35}
-                        fill='white'
-                        onClick={() => {
-                          dispatch({
-                            type: actions.DELETE_META_BY_ID,
-                            payload: meta.id,
-                          });
-                        }}
-                        className='absolute right-0 cursor-pointer'
-                      />
-                    </li>
-                  );
-                })*/}
-                <input
-                  type='text'
-                  placeholder='Tilføj opskrift tag'
-                  name='meta'
-                  value={state.foodModal.form.meta}
-                  onChange={(e) => {
-                    dispatch({
-                      type: actions.CHANGE_FOOD_MODAL_FORM,
-                      payload: { name: e.target.name, value: e.target.value },
-                    });
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      const newMeta = {
-                        id: uuidv4(),
-                        name: state.foodModal.form.meta,
-                      };
-                      dispatch({ type: actions.NEW_META, payload: newMeta });
-                      dispatch({ type: actions.RESET_META_FORM });
-                    }
-                  }}
-                  className='flex-1 border-0 focus:ring-0 focus:outline-none p-2 m-[10px]'
-                />
-              </ul>
+          <div className='min-h-[72%] mr-4 w-1/5 space-y-4'>
+            <div className='bg-button shadow-form p-4 rounded-md'>
+              <h1 className='text-gray-200 self-start text-lg font-poppins uppercase font-bold'>
+                FAQ
+              </h1>
+              <h1 className='text-gray-200 self-start text-lg font-poppins uppercase font-bold mb-4'>
+                Hvorfor uploade en opskrift?
+              </h1>
+              <p className='text-md font-text text-white text-justify'>
+                Hos Min Kostplan går vi meget op i, at have en varieret række
+                skræddersyet opskrifter lavet af vores team samt forbrugere.
+                Dette kræver også en indsats fra vores brugere, og derfor har vi
+                valgt, at for hver opskrift der uploades optjenes der 5 point,
+                hvor at man til sidst efter 50 optjente point, kan få gratis
+                medlemsskab. Som tak for ens bidrag.
+              </p>
+            </div>
+            <div className='bg-button shadow-form p-4 rounded-md'>
+              <h1 className='text-lg font-poppins text-gray-200 uppercase font-bold'>
+                Opskrift tags
+              </h1>
+              <p className='font-poppins text-white mb-4'>
+                Her tilføjer du ord der kan beskrive opskriften
+              </p>
+              <Tags text='Tilføj opskrift kendetegn...' ref={tagsRef} />
             </div>
           </div>
         </div>
@@ -566,7 +491,6 @@ const PickFoodModal = () => {
       grams: state.foodModal.form?.grams,
       amountOwnUnit: state.foodModal.form?.amountOwnUnit,
       unit: state.foodModal.form?.unit,
-      metaList: state.foodModal.form?.metaList,
     };
 
     dispatch({ type: actions.NEW_INGREDIENT, payload: newIngredient });
@@ -686,55 +610,7 @@ const PickFoodModal = () => {
             </div>
           </div>
         </div>
-        <div className='w-[500px] min-h-[46px] flex bg-secondary shadow-lg p-2 rounded'>
-          <ul className='w-full flex-wrap flex -m-[10px] flex-row pl-0'>
-            {state.foodModal.form.metaList.map((meta) => {
-              return (
-                <li
-                  key={meta.id}
-                  className='m-[10px] relative flex items-center w-auto text-white mr-2 p-2 pr-8 bg-blue-500 hover:bg-blue-400 rounded-md'
-                >
-                  <span className='font-title'>{meta.name}</span>
-                  <BsX
-                    size={35}
-                    fill='white'
-                    onClick={() => {
-                      dispatch({
-                        type: actions.DELETE_META_BY_ID,
-                        payload: meta.id,
-                      });
-                    }}
-                    className='absolute right-0 cursor-pointer'
-                  />
-                </li>
-              );
-            })}
-            <input
-              type='text'
-              placeholder='Tilføj ingrediens meta'
-              name='meta'
-              value={state.foodModal.form.meta}
-              onChange={(e) => {
-                dispatch({
-                  type: actions.CHANGE_FOOD_MODAL_FORM,
-                  payload: { name: e.target.name, value: e.target.value },
-                });
-              }}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                  const newMeta = {
-                    id: uuidv4(),
-                    name: state.foodModal.form.meta,
-                  };
-                  dispatch({ type: actions.NEW_META, payload: newMeta });
-                  dispatch({ type: actions.RESET_META_FORM });
-                }
-              }}
-              className='flex-1 border-0 focus:ring-0 focus:outline-none p-2 m-[10px]'
-            />
-          </ul>
-        </div>
+
         <div className='w-[500px] flex'>
           <input
             value={state.foodModal.form.grams}
@@ -867,18 +743,7 @@ const IngredientInstructionModal = () => {
                             })?.displayName
                           }
                         </p>
-                        {ingredient.metaList.length > 0 && (
-                          <p>
-                            Tags:{' '}
-                            {ingredient.metaList.map((meta) => {
-                              return (
-                                <span className='after:content-[",_"] last:after:content-["."]'>
-                                  {meta.name}
-                                </span>
-                              );
-                            })}
-                          </p>
-                        )}
+
                         <AiTwotoneDelete
                           onClick={() => {
                             dispatch({

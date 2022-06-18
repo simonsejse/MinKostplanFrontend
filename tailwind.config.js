@@ -3,6 +3,9 @@ module.exports = {
 
   theme: {
     extend: {
+      backdropBlur: {
+        xs: '2px',
+      },
       boxShadow: {
         form: 'rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px',
         instructionShadow: 'rgba(0, 0, 0, 0.35) 0px 5px 15px',
@@ -10,15 +13,55 @@ module.exports = {
         light:
           'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
         pink: 'rgba(240, 46, 170, 0.4) -5px 5px, rgba(240, 46, 170, 0.3) -10px 10px, rgba(240, 46, 170, 0.2) -15px 15px, rgba(240, 46, 170, 0.1) -20px 20px, rgba(240, 46, 170, 0.05) -25px 25px',
+        reverseBorder: '0 -25px 0 0 #6d24a8',
       },
       height: {
         90: '90%',
         '85-per': '85%',
         80: '80%',
+        150: '150px',
+        200: '200px',
+        250: '250px',
+        300: '300px',
+        350: '350px',
+        400: '400px',
+        450: '450px',
+        500: '500px',
+        530: '530px',
+        550: '550px',
+        600: '600px',
+        650: '650px',
+        700: '700px',
+        750: '750px',
+        800: '800px',
+        850: '850px',
+        900: '900px',
+        950: '950px',
+        1000: '1000px',
       },
+
       width: {
         95: '95%',
         90: '90%',
+        150: '150px',
+        200: '200px',
+        250: '250px',
+        300: '300px',
+        350: '350px',
+        400: '400px',
+        450: '450px',
+        500: '500px',
+        530: '530px',
+        550: '550px',
+        600: '600px',
+        650: '650px',
+        700: '700px',
+        750: '750px',
+        800: '800px',
+        850: '850px',
+        900: '900px',
+        950: '950px',
+        1000: '1000px',
       },
       fontFamily: {
         title: 'Roboto',
@@ -26,6 +69,7 @@ module.exports = {
         text: 'Open Sans',
         text2: 'Times New Roman',
         poppins: 'Poppins, sans-serif',
+        oswald: 'Oswald',
       },
       colors: {
         primary: '#eeeeee', //#F7F7F9

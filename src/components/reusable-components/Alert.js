@@ -1,144 +1,217 @@
-import { forwardRef, useRef, useState, useImperativeHandle } from 'react';
+import {
+  forwardRef,
+  useRef,
+  useState,
+  useImperativeHandle,
+  useContext,
+  createContext,
+} from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRegSadTear, FaRegSmileBeam } from 'react-icons/fa';
 import { GoThumbsup } from 'react-icons/go';
 import { AiOutlineMessage } from 'react-icons/ai';
 
-const Alert = forwardRef(({ isCloseable }, ref) => {
-  const [show, setShow] = useState(false);
-  const [alertChildren, setAlertChildren] = useState(undefined);
-  const [isError, setIsError] = useState(false);
+const AlertContext = createContext();
 
-  useImperativeHandle(ref, () => ({
-    show: () => setShow(true),
-    hide: () => setShow(false),
-    setIsError: (isError) => setIsError(isError),
-    setAlertChildren: (HTMLElements) => setAlertChildren(HTMLElements),
-  }));
+export const useAlert = () => {
+  return useContext(AlertContext);
+};
+
+const AlertProvider = (props) => {
+  const [show, setShow] = useState(false);
+  const [message, setMessage] = useState('');
+  const [errors, setErrors] = useState([]);
+  const [isError, setIsError] = useState(true);
+  const [isCloseable, setIsCloseable] = useState(true);
+
+  const showError = ({
+    message = 'Uventet fejl!',
+    errors = [],
+    closeable = true,
+  }) => {
+    setMessage(message);
+    setErrors(errors);
+    setIsCloseable(closeable);
+    setIsError(true);
+    setShow(true);
+  };
+
+  const showSuccess = ({
+    message = 'Ok det er godkendt!',
+    errors = [],
+    closeable = true,
+  }) => {
+    setMessage(message);
+    setErrors(errors);
+    setIsCloseable(closeable);
+    setIsError(false);
+    setShow(true);
+  };
 
   return (
-    <AnimatePresence>
-      {show && (
-        <>
-          <motion.div
-            id='backdrop'
-            initial={{ opacity: 0, transition: { duration: 0.3 } }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.4, delay: 0.4 } }}
-            onClick={() => {
-              if (!isCloseable) return;
-              setShow(false);
-              setIsError(false);
-            }}
-            className='fixed h-screen w-screen bg-modalBackdrop top-0 left-0 z-50'
-          />
-          <motion.div
-            id='modal'
-            initial={{
-              scale: 0,
-            }}
+    <AlertContext.Provider value={{ showError, showSuccess }}>
+      <AlertComponent
+        show={show}
+        setShow={setShow}
+        setIsError={setIsError}
+        isCloseable={isCloseable}
+        isError={isError}
+        message={message}
+        errors={errors}
+      />
+      {props.children}
+    </AlertContext.Provider>
+  );
+};
+
+const AlertComponent = ({
+  show,
+  setShow,
+  setIsError,
+  isCloseable,
+  isError,
+  message,
+  errors,
+}) => (
+  <AnimatePresence>
+    {show && (
+      <div className='z-50 fixed w-full'>
+        <motion.div
+          id='backdrop'
+          initial={{ opacity: 0, transition: { duration: 0.3 } }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.4, delay: 0.4 } }}
+          onClick={() => {
+            if (!isCloseable) return;
+            setShow(false);
+            setIsError(false);
+          }}
+          className='h-full w-full bg-modalBackdrop top-0 left-0'
+        />
+        <motion.div
+          id='modal'
+          initial={{
+            scale: 0,
+          }}
+          animate={{
+            scale: 1,
+            transition: {
+              duration: 0.4,
+            },
+          }}
+          exit={{
+            scale: 0,
+            transition: {
+              duration: 0.3,
+              delay: 0.5,
+            },
+          }}
+          //w-90 md:w-3/4 xl:w-1/2*/
+          className='absolute top-0 bottom-0 right-0 left-0 m-auto w-90 md:w-[600px] rounded-md h-[400px] max-h-[400px] bg-secondary shadow-hard'
+        >
+          {/** Header is h-1/4 */}
+          <header
+            className={`h-1/4 rounded-tr-md rounded-tl-md ${
+              isError ? 'bg-red-400' : 'bg-green-400'
+            }`}
+          >
+            {/* p-3 needs because down in button theres a p-3 */}
+            <motion.div
+              initial={{ x: 400, opacity: 0 }}
+              animate={{
+                x: 0,
+                opacity: 1,
+                transition: {
+                  duration: 0.5,
+                  delay: 0.5,
+                },
+              }}
+              exit={{
+                x: 400,
+                opacity: 0,
+                transition: {
+                  duration: 0.4,
+                },
+              }}
+              id='wrap-icon-title'
+              className='p-3 h-full flex justify-center items-center space-x-4'
+            >
+              {isError ? (
+                <FaRegSadTear size={43} fill='white' />
+              ) : (
+                <FaRegSmileBeam size={43} fill='white' />
+              )}
+              {isError && (
+                <h1
+                  className={`font-title text-xl ${
+                    isError ? 'text-white' : 'text-green-700'
+                  } self-center`}
+                >
+                  Åh nej, der er opstået en fejl.
+                </h1>
+              )}
+            </motion.div>
+          </header>
+          {/** content is h-3/4 */}
+          <motion.section
+            initial={{ scale: 0 }}
             animate={{
               scale: 1,
               transition: {
-                duration: 0.4,
+                duration: 0.3,
+                delay: 0.4,
               },
             }}
             exit={{
               scale: 0,
               transition: {
                 duration: 0.3,
-                delay: 0.5,
+                delay: 0.4,
               },
             }}
-            //w-90 md:w-3/4 xl:w-1/2*/
-            className='fixed top-0 bottom-0 right-0 left-0 w-fit max-w-90 rounded-md m-auto h-fit bg-secondary shadow-hard z-50'
+            className='h-3/4 max-h-3/4 '
+            id='modal-section'
           >
             <motion.div
-              initial={{ scale: 0 }}
+              initial={{ x: 400, opacity: 0 }}
               animate={{
-                scale: 1,
+                x: 0,
+                opacity: 1,
                 transition: {
-                  duration: 0.3,
-                  delay: 0.4,
+                  duration: 0.5,
+                  delay: 0.5,
                 },
               }}
               exit={{
-                scale: 0,
+                x: 400,
+                opacity: 0,
                 transition: {
-                  duration: 0.3,
-                  delay: 0.4,
+                  duration: 0.4,
                 },
               }}
               id='modal-content'
+              className='h-full overflow-auto hide-scroll pr-[50px] pl-[50px] pt-[25px] pb-[25px] font-title2 text-md text-gray-400 flex flex-col items-strech'
             >
-              <header
-                className={`p-[10px] rounded-tr-md rounded-tl-md ${
-                  isError ? 'bg-red-400' : 'bg-green-400'
-                }`}
-              >
-                {/* p-3 needs because down in button theres a p-3 */}
-                <motion.div
-                  initial={{ x: 400, opacity: 0 }}
-                  animate={{
-                    x: 0,
-                    opacity: 1,
-                    transition: {
-                      duration: 0.5,
-                      delay: 0.5,
-                    },
-                  }}
-                  exit={{
-                    x: 400,
-                    opacity: 0,
-                    transition: {
-                      duration: 0.4,
-                    },
-                  }}
-                  id='wrap-icon-title'
-                  className='p-3 flex justify-center items-center space-x-4'
-                >
-                  {isError ? (
-                    <FaRegSadTear size={43} fill='white' />
-                  ) : (
-                    <FaRegSmileBeam size={43} fill='white' />
-                  )}
-                  {isError && (
-                    <h1
-                      className={`font-title text-xl ${
-                        isError ? 'text-white' : 'text-green-700'
-                      } self-center`}
-                    >
-                      Åh nej, der er opstået en fejl.
-                    </h1>
-                  )}
-                </motion.div>
-              </header>
-              <motion.div
-                initial={{ x: 400, opacity: 0 }}
-                animate={{
-                  x: 0,
-                  opacity: 1,
-                  transition: {
-                    duration: 0.5,
-                    delay: 0.5,
-                  },
-                }}
-                exit={{
-                  x: 400,
-                  opacity: 0,
-                  transition: {
-                    duration: 0.4,
-                  },
-                }}
-                className='p-[50px] font-title2 text-md text-gray-400 flex flex-col items-center justify-center'
-              >
+              {/** mt-auto applies to both to make the div above go center, and the footer go to the bottom */}
+              <div className='mt-auto space-y-2'>
                 <AiOutlineMessage
                   className={`${isError ? 'fill-red-400' : 'fill-green-400'}`}
                   size={30}
                 />
-                {alertChildren}
-              </motion.div>
-              <footer className={`self-end flex justify-center`}>
+                <div>
+                  <>
+                    <p>{message}</p>
+                    {errors.length > 0 && (
+                      <ul className='list-disc list-inside'>
+                        {errors.map((error, idx) => {
+                          return <li key={idx}>{error}</li>;
+                        })}
+                      </ul>
+                    )}
+                  </>
+                </div>
+              </div>
+              <footer className={`mt-auto flex justify-center`}>
                 <button
                   disabled={isCloseable === false}
                   onClick={() => {
@@ -159,11 +232,11 @@ const Alert = forwardRef(({ isCloseable }, ref) => {
                 </button>
               </footer>
             </motion.div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
-});
+          </motion.section>
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+);
 
-export default Alert;
+export default AlertProvider;

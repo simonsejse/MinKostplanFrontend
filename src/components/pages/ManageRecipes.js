@@ -18,7 +18,7 @@ import Card from './RecipeCard';
  */
 import recipeService from '../../services/recipe/recipe.service';
 
-import Alert from '../reusable-components/Alert';
+import Alert, { useAlert } from '../reusable-components/Alert';
 import RecipeModal from '../modals/RecipeModal';
 
 const ManageRecipes = () => {
@@ -26,11 +26,7 @@ const ManageRecipes = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [data, setData] = useState([]);
 
-  const showAlert = (children, isError) => {
-    alertRef.current.setAlertChildren(children);
-    alertRef.current.setIsError(isError);
-    alertRef.current.show();
-  };
+  const { showSuccess, showError } = useAlert();
 
   const fetchRecipeById = async (id) => {
     const recipe = await recipeService.getRecipeById(id);
@@ -50,14 +46,11 @@ const ManageRecipes = () => {
   }, [currentPage, updateRecipes]);
 
   const modalRef = useRef();
-  const alertRef = useRef();
 
   return (
     <>
       <div className='flex-1 bg-primary'>
         <div className='h-full flex flex-col'>
-          <Alert ref={alertRef} isCloseable={true} />
-
           <RecipeModal ref={modalRef}>
             <header className='flex border-b-2'>
               <h1 className='xl:max-w-[1000px] lg:max-w-[500px] uppercase font-title2 font-semibold text-gray-700 text-xl lg:text-2xl'>
@@ -103,7 +96,7 @@ const ManageRecipes = () => {
                     </h2>
                   </div>
                   <ul className='mt-4 list-disc list-inside text-gray-500 font-extrabold font-title text-sm lg:text-md ingredient-list'>
-                    {recipe?.ingredients.map((ingredient) => {
+                    {recipe?.ingredients?.map((ingredient) => {
                       return (
                         <li
                           key={ingredient.id}
@@ -118,7 +111,7 @@ const ManageRecipes = () => {
                             gram.
                           </span>
 
-                          {ingredient?.metas.length > 0 && (
+                          {ingredient?.metas?.length > 0 && (
                             <span className='ml-5 before:content-["-_"]'>
                               {ingredient?.metas?.map((meta) => {
                                 return (
@@ -149,7 +142,7 @@ const ManageRecipes = () => {
                   </div>
 
                   <ul className='mt-4 list-decimal list-inside text-gray-500 font-extrabold font-title text-sm lg:text-md instruction-list'>
-                    {recipe?.analyzedInstructions.map((instruction) => {
+                    {recipe?.analyzedInstructions?.map((instruction) => {
                       return (
                         <li key={instruction.id} className='instruction-item'>
                           <span className='instruction-name'>
@@ -314,7 +307,6 @@ const ManageRecipes = () => {
                       updateRecipes={updateRecipes}
                       recipe={recipe}
                       modalRef={modalRef}
-                      alertRef={alertRef}
                       fetchRecipeById={fetchRecipeById}
                     />
                   );

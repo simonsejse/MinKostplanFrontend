@@ -16,13 +16,15 @@ import About from './pages/About';
 import CreateRecipe from './pages/CreateRecipe';
 import Support from './pages/Support';
 import ManageRecipes from './pages/ManageRecipes';
-import { DragDropContext } from 'react-beautiful-dnd';
+
 /**
  * Custom React Providers
  */
 import { NavigationProvider } from '../contexts/nav.context';
 import { AuthProvider } from '../contexts/auth.context';
 import CreateDietPlan from './pages/CreateDietPlan';
+import ResetCredentials from './pages/ResetCredentials';
+import AlertProvider from './reusable-components/Alert';
 
 /**
  * Contexts needed throughout the application
@@ -34,7 +36,8 @@ const App = () => {
   return (
     <AuthProvider>
       <NavigationProvider>
-        {/* 
+        <AlertProvider>
+          {/* 
         we say the div is flex, and then basically have 2 elements the sidebar and then 
         the page itself then we tell the pages to flex-1 since it tells it to grow so much it can 
         take up the rest of the space
@@ -42,91 +45,93 @@ const App = () => {
         Wrapper for the whole routes then we use flex-1 (flex-grow-1) inside each element to tell
          take as much space as you can within your parent flex container.*/}
 
-        <div className='flex'>
-          {loc.pathname !== '/login' && loc.pathname !== '/register' && (
-            <Sidebar />
-          )}
-          <Routes>
-            <Route
-              exact
-              index
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              exact
-              path='support'
-              element={
-                <ProtectedRoute>
-                  <Support />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              exact
-              path='home'
-              element={
-                <ProtectedRoute>
-                  <Home />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              exact
-              path='create-recipe'
-              element={
-                <ProtectedRoute>
-                  <CreateRecipe />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              exact
-              path='about'
-              element={
-                <ProtectedRoute>
-                  <About />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              exact
-              path='/create-diet-plan'
-              element={
-                <ProtectedRoute>
-                  <CreateDietPlan />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              exact
-              path='admin/create-meal'
-              element={
-                <ProtectedRoute>
-                  <CreateRecipe />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              exact
-              path='manage/recipes'
-              element={
-                <ProtectedRoute>
-                  <ManageRecipes />
-                </ProtectedRoute>
-              }
-            />
+          <div className='flex'>
+            {loc.pathname !== '/login' && loc.pathname !== '/register' && (
+              <Sidebar />
+            )}
+            <Routes>
+              <Route
+                exact
+                index
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                exact
+                path='support'
+                element={
+                  <ProtectedRoute>
+                    <Support />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                exact
+                path='home'
+                element={
+                  <ProtectedRoute>
+                    <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                exact
+                path='create-recipe'
+                element={
+                  <ProtectedRoute>
+                    <CreateRecipe />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                exact
+                path='about'
+                element={
+                  <ProtectedRoute>
+                    <About />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                exact
+                path='/create-diet-plan'
+                element={
+                  <ProtectedRoute>
+                    <CreateDietPlan />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                exact
+                path='admin/create-meal'
+                element={
+                  <ProtectedRoute>
+                    <CreateRecipe />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                exact
+                path='manage/recipes'
+                element={
+                  <ProtectedRoute>
+                    <ManageRecipes />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route exact path='logout' />
+              <Route exact path='logout' />
 
-            <Route exact path='login' element={<Login />} />
-            <Route exact path='register' element={<Register />} />
-            <Route path='*' element={<Error />} />
-          </Routes>
-        </div>
+              <Route exact path='login' element={<Login />} />
+              <Route exact path='register' element={<Register />} />
+              <Route exact path='/cred/reset' element={<ResetCredentials />} />
+              <Route path='*' element={<Error />} />
+            </Routes>
+          </div>
+        </AlertProvider>
       </NavigationProvider>
     </AuthProvider>
   );

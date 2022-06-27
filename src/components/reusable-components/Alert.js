@@ -107,7 +107,7 @@ const AlertComponent = ({
             },
           }}
           //w-90 md:w-3/4 xl:w-1/2*/
-          className='absolute top-0 bottom-0 right-0 left-0 m-auto w-90 md:w-[600px] rounded-md h-[400px] max-h-[400px] bg-secondary shadow-hard'
+          className='absolute top-0 bottom-0 right-0 left-0 m-auto w-90 md:w-[600px] rounded-md h-fit max-h-[400px] bg-secondary shadow-hard'
         >
           {/** Header is h-1/4 */}
           <header
@@ -211,7 +211,7 @@ const AlertComponent = ({
                   </>
                 </div>
               </div>
-              <footer className={`mt-auto flex justify-center`}>
+              <footer className={`flex justify-center`}>
                 <button
                   disabled={isCloseable === false}
                   onClick={() => {

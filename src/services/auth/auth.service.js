@@ -20,8 +20,16 @@ class AuthService {
     );
   }
 
-  resetCredentials(email) {
+  requestResetCredentials(email) {
     return axios.get(`${API_BASE_URL}/reset/credentials?email=${email}`);
+  }
+
+  resetCredentials(token, newPassword, newPasswordConfirmed) {
+    return axios.post(
+      `${API_BASE_URL}/reset/credentials`,
+      { token, newPassword, newPasswordConfirmed },
+      axiosRequestConfig
+    );
   }
 
   logOut() {

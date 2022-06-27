@@ -72,6 +72,7 @@ const Register = () => {
       birthday: state.form.birthday,
     };
 
+    console.log(registerRequest);
     authService.register(registerRequest).then(
       (response) => {
         console.log(response);
@@ -98,6 +99,16 @@ const Register = () => {
       payload: {
         name: name,
         value: value,
+      },
+    });
+  };
+
+  const handleChange = (name) => (event) => {
+    dispatch({
+      type: actions.CHANGE_FORM,
+      payload: {
+        name,
+        value: event.target.value,
       },
     });
   };
@@ -344,6 +355,8 @@ const Register = () => {
                         id='input-with-sx'
                         label='E-mailadresse'
                         variant='standard'
+                        value={state.email}
+                        onChange={handleChange('email')}
                         autoComplete='email'
                         required
                       />
@@ -356,6 +369,8 @@ const Register = () => {
                         id='input-with-sx'
                         label='Brugernavn'
                         variant='standard'
+                        value={state.username}
+                        onChange={handleChange('username')}
                         autoComplete='username'
                         required
                       />
@@ -386,6 +401,8 @@ const Register = () => {
                         id='password-input'
                         label='Password'
                         variant='standard'
+                        value={state.password}
+                        onChange={handleChange('password')}
                         autoComplete='password'
                         required
                       />
@@ -418,6 +435,8 @@ const Register = () => {
                         id='input-with-sx'
                         label='Bekræft password'
                         variant='standard'
+                        value={state.confirmPassword}
+                        onChange={handleChange('confirmPassword')}
                         autoComplete='password'
                         required
                       />
@@ -491,9 +510,7 @@ const Register = () => {
                             type='radio'
                             name='gender'
                             value='MALE'
-                            onChange={(e) =>
-                              changeForm(e.target.name, e.target.value)
-                            }
+                            onChange={handleChange('gender')}
                             required
                           />
                           <span>Mand</span>
@@ -503,9 +520,7 @@ const Register = () => {
                             type='radio'
                             name='gender'
                             value='FEMALE'
-                            onChange={(e) =>
-                              changeForm(e.target.name, e.target.value)
-                            }
+                            onChange={handleChange('gender')}
                             required
                           />
                           <span>Kvinde</span>
@@ -541,6 +556,8 @@ const Register = () => {
                             ),
                           }}
                           variant='standard'
+                          value={state.form.weight}
+                          onChange={handleChange('weight')}
                         />
                         <TextField
                           label='Højde'
@@ -559,6 +576,8 @@ const Register = () => {
                             ),
                           }}
                           variant='standard'
+                          value={state.form.height}
+                          onChange={handleChange('height')}
                         />
                       </section>
                     </div>
@@ -576,9 +595,7 @@ const Register = () => {
                             type='radio'
                             name='activity'
                             value='SEDENTARY'
-                            onChange={(e) =>
-                              changeForm(e.target.name, e.target.value)
-                            }
+                            onChange={handleChange('activity')}
                             required
                           />
                           <span>Stillesiddende</span>
@@ -588,9 +605,7 @@ const Register = () => {
                             type='radio'
                             name='activity'
                             value='MODERATELY_ACTIVE'
-                            onChange={(e) =>
-                              changeForm(e.target.name, e.target.value)
-                            }
+                            onChange={handleChange('activity')}
                             required
                           />
                           <span>Moderat aktiv</span>
@@ -600,9 +615,7 @@ const Register = () => {
                             type='radio'
                             name='activity'
                             value='VERY_ACTIVE'
-                            onChange={(e) =>
-                              changeForm(e.target.name, e.target.value)
-                            }
+                            onChange={handleChange('activity')}
                             required
                           />
                           <span>Meget aktiv</span>
@@ -612,9 +625,7 @@ const Register = () => {
                             type='radio'
                             name='activity'
                             value='EXTREMELY_ACTIVE'
-                            onChange={(e) =>
-                              changeForm(e.target.name, e.target.value)
-                            }
+                            onChange={handleChange('activity')}
                             required
                           />
                           <span>Ekstrem aktiv</span>
@@ -684,6 +695,8 @@ const Register = () => {
                       label='Fornavn'
                       variant='filled'
                       className='outline-none ring-0 border-0'
+                      value={state.form.firstName}
+                      onChange={handleChange('firstName')}
                       required
                     />
                   </div>
@@ -693,6 +706,8 @@ const Register = () => {
                       label='Efternavn'
                       variant='filled'
                       className='outline-none ring-0 border-0'
+                      value={state.form.lastName}
+                      onChange={handleChange('lastName')}
                       required
                     />
                   </div>

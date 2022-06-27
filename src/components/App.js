@@ -46,9 +46,9 @@ const App = () => {
          take as much space as you can within your parent flex container.*/}
 
           <div className='flex'>
-            {loc.pathname !== '/login' && loc.pathname !== '/register' && (
-              <Sidebar />
-            )}
+            {loc.pathname !== '/login' &&
+              loc.pathname !== '/register' &&
+              loc.pathname !== '/reset/credentials' && <Sidebar />}
             <Routes>
               <Route
                 exact
@@ -127,7 +127,11 @@ const App = () => {
 
               <Route exact path='login' element={<Login />} />
               <Route exact path='register' element={<Register />} />
-              <Route exact path='/cred/reset' element={<ResetCredentials />} />
+              <Route
+                exact
+                path='/reset/credentials'
+                element={<ResetCredentials />}
+              />
               <Route path='*' element={<Error />} />
             </Routes>
           </div>

@@ -1,52 +1,63 @@
+const DEFAULT_USER_ID = 0;
+const DEFAULT_USER_USERNAME = '';
+const DEFAULT_USER_ACTIVITY = '';
+const DEFAULT_USER_GENDER = '';
+const DEFAULT_USER_HEIGHT = 0;
+const DEFAULT_USER_WEIGHT = 0;
+const DEFAULT_USER_AGE = 0;
+
+const DEFAULT_INGREDIENTS = [];
+
+const DEFAULT_PAGE = 1;
+
+const DEFAULT_CALORIES = 50;
+const DEFAULT_DIET_PLAN_PURPOSE = 'LOSS';
+const DEFAULT_DIET_PLAN_NAME = '';
+const DEFAULT_SEARCH_BY_NAME = '';
+
+const DEFAULT_PAGEABLE_DATA = [];
+const DEFAULT_IS_PAGE_DATA_LOADING = false;
+const DEFAULT_PICKED_RECIPES = [];
+
 export const actions = {
-  SHOW_ALERT: 'SHOW_ALERT',
-  HIDE_ALERT: 'HIDE_ALERT',
-  UPDATE_FOOD: 'UPDATE_FOOD',
-  REMOVE_SEARCH_BY_INGREDIENT_ID: 'REMOVE_SEARCH_BY_INGREDIENT',
-  ADD_SEARCH_BY_INGREDIENT: 'ADD_SEARCH_BY_INGREDIENT',
-  UPDATE_RECIPE: 'UPDATE_RECIPE',
-  CHANGE_SECTION_ONE_FORM_VALUES: 'CHANGE_SECTION_ONE_FORM_VALUES',
-  CHANGE_SECTION_ONE_FORM_MEAL_DISTRIBUTION_VALUES:
-    'CHANGE_SECTION_ONE_FORM_MEAL_DISTRIBUTION_VALUES',
-  NEXT_SECTION: 'NEXT_SECTION',
-  PREV_SECTION: 'PREV_SECTION',
-  TOGGLE_SIDEBAR: 'TOGGLE_SIDEBAR',
-  SET_USER_INFO: 'SET_USER_INFO',
-  SET_RECIPES: 'SET_RECIPES',
+  UPDATE_FOOD: 1,
+  TOGGLE_SIDEBAR: 2,
+  SET_USER_INFO: 3,
+  SET_RECIPES: 4,
+  SET_CURRENT_PAGE: 5,
+  SET_PAGE_DATA: 6,
+  ADD_RECIPE: 7,
+  REMOVE_RECIPE: 8,
+  CHANGE_FORM_DATA: 9,
+  RESET_LOADED_RECIPES: 10,
+  RESET_CALORIES_TO_DEFAULT: 11,
+  SET_IS_PAGE_DATA_LOADING: 12,
+  RESET_PAGE: 13,
 };
 
 export const initialState = {
-  section: 1,
-  showSidebar: false,
-  foods: [],
-  page: 0,
-  recipes: [],
-  user: {
-    id: 0,
-    username: '',
-    activity: '',
-    gender: '',
-    height: 0,
-    weight: 0,
-    age: 0,
-  }, //
-  sectionOne: {
-    name: '',
-    purpose: 'Muskelopbygning',
-    proteinMacro: 0,
-    fatMacro: 0,
-    carbsMacro: 0,
-    mealDistribution: {
-      meal_1: 0,
-      meal_2: 0,
-      meal_3: 0,
-      meal_4: 0,
-      meal_5: 0,
+  staticData: {
+    user: {
+      id: DEFAULT_USER_ID,
+      username: DEFAULT_USER_USERNAME,
+      activity: DEFAULT_USER_ACTIVITY,
+      gender: DEFAULT_USER_GENDER,
+      height: DEFAULT_USER_HEIGHT,
+      weight: DEFAULT_USER_WEIGHT,
+      age: DEFAULT_USER_AGE,
     },
-    mealCount: 1,
-    weightPerWeek: 0,
+    foods: DEFAULT_INGREDIENTS,
   },
-  searchByIngredients: [],
+  form: {
+    dietPlanName: DEFAULT_DIET_PLAN_NAME,
+    dietPlanPurpose: DEFAULT_DIET_PLAN_PURPOSE,
+    searchByName: DEFAULT_SEARCH_BY_NAME,
+    caloriesWanted: DEFAULT_CALORIES,
+  },
+  currentPage: DEFAULT_PAGE,
+  pageData: DEFAULT_PAGEABLE_DATA,
+  isPageDataLoading: DEFAULT_IS_PAGE_DATA_LOADING,
+  pickedRecipes: DEFAULT_PICKED_RECIPES,
 };
 
 export const reducer = (state, action) => {
@@ -54,81 +65,11 @@ export const reducer = (state, action) => {
     case actions.UPDATE_FOOD:
       return {
         ...state,
-        foods: action.payload,
-      };
-    case actions.ADD_SEARCH_BY_INGREDIENT: {
-      const { id, name } = action.payload;
-
-      if (
-        state.searchByIngredients
-          .map((ingredient) => ingredient.name)
-          .includes(name)
-      ) {
-        return {
-          ...state,
-        };
-      }
-
-      const newSearchByIngredients = {
-        id,
-        name,
-      };
-
-      return {
-        ...state,
-        searchByIngredients: [
-          ...state.searchByIngredients,
-          newSearchByIngredients,
-        ],
-      };
-    }
-    case actions.REMOVE_SEARCH_BY_INGREDIENT_ID: {
-      const searchByIngredientId = action.payload;
-      return {
-        ...state,
-        searchByIngredients: state.searchByIngredients.filter(
-          (ingredient) => ingredient.id !== searchByIngredientId
-        ),
-      };
-    }
-    case actions.UPDATE_RECIPE:
-      return {
-        ...state,
-        currentRecipe: action.payload,
-      };
-    case actions.CHANGE_SECTION_ONE_FORM_VALUES:
-      return {
-        ...state,
-        sectionOne: {
-          ...state.sectionOne,
-          [action.payload.name]: action.payload.value,
+        staticData: {
+          ...state.staticData,
+          foods: action.payload,
         },
       };
-    case actions.CHANGE_SECTION_ONE_FORM_MEAL_DISTRIBUTION_VALUES:
-      return {
-        ...state,
-        sectionOne: {
-          ...state.sectionOne,
-          mealDistribution: {
-            ...state.sectionOne.mealDistribution,
-            [action.payload.name]: action.payload.value,
-          },
-        },
-      };
-    case actions.NEXT_SECTION:
-      const currentSection = action.payload;
-
-      return {
-        ...state,
-        section: currentSection + 1,
-      };
-    case actions.PREV_SECTION: {
-      const currentSection = action.payload;
-      return {
-        ...state,
-        section: currentSection - 1,
-      };
-    }
     case actions.TOGGLE_SIDEBAR: {
       return {
         ...state,
@@ -144,10 +85,70 @@ export const reducer = (state, action) => {
         },
       };
     }
-    case actions.SET_RECIPES: {
+    case actions.SET_CURRENT_PAGE: {
       return {
         ...state,
-        recipes: action.payload,
+        currentPage: action.payload,
+      };
+    }
+    case actions.SET_PAGE_DATA: {
+      return {
+        ...state,
+        pageData: action.payload,
+      };
+    }
+    case actions.ADD_RECIPE: {
+      const recipe = action.payload;
+      return {
+        ...state,
+        pickedRecipes: [...state.pickedRecipes, recipe],
+      };
+    }
+    case actions.REMOVE_RECIPE: {
+      const recipe_id = action.payload;
+      return {
+        ...state,
+        pickedRecipes: state.pickedRecipes.filter(
+          (recipe) => recipe.id !== recipe_id
+        ),
+      };
+    }
+    case actions.CHANGE_FORM_DATA: {
+      const { whichValue, value } = action.payload;
+      return {
+        ...state,
+        form: {
+          ...state.form,
+          [whichValue]: value,
+        },
+      };
+    }
+    case actions.RESET_LOADED_RECIPES: {
+      return {
+        ...state,
+        pageData: DEFAULT_PAGEABLE_DATA,
+      };
+    }
+    case actions.RESET_CALORIES_TO_DEFAULT: {
+      return {
+        ...state,
+        form: {
+          ...state.form,
+          caloriesWanted: DEFAULT_CALORIES,
+        },
+      };
+    }
+    case actions.SET_IS_PAGE_DATA_LOADING: {
+      const trueOrFalse = action.payload;
+      return {
+        ...state,
+        isPageDataLoading: trueOrFalse,
+      };
+    }
+    case actions.RESET_PAGE: {
+      return {
+        ...state,
+        currentPage: 1,
       };
     }
     default:

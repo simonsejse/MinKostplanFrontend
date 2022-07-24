@@ -73,9 +73,9 @@ const NewsFeed = () => {
     <section className='h-full flex justify-center items-center'>
       <div className='w-full md:w-2/3 max-h-[50rem] overflow-y-auto'>
         {/* Actual news feed */}
-        <div className='flex flex-col h-full space-y-4'>
+        <div className='flex flex-col h-full space-y-4 p-2'>
           <div className='border-b-4 border-sky-500'>
-            <h1 className='text-gray-100 text-xl font-bold block uppercase tracking-wide'>
+            <h1 className='text-gray-800 text-xl font-bold block uppercase tracking-wide'>
               Nyheder (opdateringer)
             </h1>
           </div>
@@ -83,15 +83,15 @@ const NewsFeed = () => {
             return (
               <div
                 key={news.id}
-                className='p-4 bg-gray-800 hover:bg-gray-700 rounded-xl space-y-2'
+                className='p-4 bg-secondary shadow-form rounded-xl space-y-2'
               >
                 <div className='flex flex-col'>
                   <div className='flex items-center justify-between'>
                     <div className='flex space-x-2'>
-                      <h1 className='text-gray-100 text-xl font-bold block uppercase tracking-wide'>
+                      <h1 className='text-gray-700 text-xl font-bold block uppercase tracking-wide'>
                         {news.id}.
                       </h1>
-                      <h1 className='text-yellow-200 text-xl font-bold block uppercase tracking-wide'>
+                      <h1 className='text-gray-700 text-xl font-bold block uppercase tracking-wide'>
                         {news.title}
                       </h1>
                     </div>
@@ -105,7 +105,7 @@ const NewsFeed = () => {
                   </h1>
                 </div>
 
-                <p className='text-gray-100 text-sm leading-normal text-left'>
+                <p className='text-gray-900 text-sm leading-normal text-left'>
                   {news.content}
                 </p>
               </div>

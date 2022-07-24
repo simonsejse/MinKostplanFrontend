@@ -19,7 +19,6 @@ import Card from './RecipeCard';
 import recipeService from '../../services/recipe/recipe.service';
 
 import Alert, { useAlert } from '../reusable-components/Alert';
-import RecipeModal from '../modals/RecipeModal';
 
 const ManageRecipes = () => {
   const [recipe, setRecipe] = useState(null);
@@ -51,7 +50,7 @@ const ManageRecipes = () => {
     <>
       <div className='flex-1 bg-primary'>
         <div className='h-full flex flex-col'>
-          <RecipeModal ref={modalRef}>
+          {/* <RecipeModal ref={modalRef}>
             <header className='flex border-b-2'>
               <h1 className='xl:max-w-[1000px] lg:max-w-[500px] uppercase font-title2 font-semibold text-gray-700 text-xl lg:text-2xl'>
                 {recipe?.name}
@@ -283,7 +282,7 @@ const ManageRecipes = () => {
                 </div>
               </div>
             </main>
-          </RecipeModal>
+          </RecipeModal>*/}
 
           <header className='p-5 bg-gradient-to-r from-accent via-indigo-600/[.9] to-button/[.8]'>
             <h1 className='justify-self-start text-white text-center font-title text-3xl'>

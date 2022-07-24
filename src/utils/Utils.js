@@ -4,3 +4,7 @@ export function calculateAgeFromBirthDate(birthday) {
   var ageDate = new Date(ageDifMs); // miliseconds from epoch
   return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
+
+export const truncateText = (str, max) => {
+  return str.length > max ? str.substring(0, max - 3) + '...' : str;
+};

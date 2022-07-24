@@ -79,6 +79,7 @@ const Register = () => {
         navigate('/login');
       },
       (err) => {
+        console.log(err?.response);
         showError({
           message:
             'Der skete en fejl under registreringen. Prøv igen eller kontakt os.',

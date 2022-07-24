@@ -21,7 +21,7 @@ const Card = ({ recipe, modalRef, fetchRecipeById, updateRecipes }) => {
     <div
       id='item-wrap'
       //h-[700px]
-      className='bg-secondary rounded-lg p-[50px] shadow-form w-[347px] relative'
+      className='bg-secondary rounded-lg p-[50px] shadow-form w-[350px] relative'
     >
       <div className='absolute top-0 right-0 pr-5 pt-5'>
         <p className='text-gray-500 font-semibold font-poppins text-sm lg:text-md'>

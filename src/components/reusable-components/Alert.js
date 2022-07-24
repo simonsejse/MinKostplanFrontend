@@ -75,7 +75,7 @@ const AlertComponent = ({
 }) => (
   <AnimatePresence>
     {show && (
-      <div className='z-50 fixed w-full'>
+      <div className='z-[100] fixed w-full'>
         <motion.div
           id='backdrop'
           initial={{ opacity: 0, transition: { duration: 0.3 } }}
